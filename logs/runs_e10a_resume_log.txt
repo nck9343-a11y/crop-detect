@@ -1,0 +1,58 @@
+New https://pypi.org/project/ultralytics/8.4.118 available  Update with 'pip install -U ultralytics'
+Ultralytics 8.4.106  Python-3.11.4 torch-2.13.0+cu132 CUDA:0 (NVIDIA GeForce RTX 4060 Laptop GPU, 8188MiB)
+[34m[1mengine\trainer: [0magnostic_nms=False, amp=True, angle=1.0, augment=False, auto_augment=randaugment, batch=8, bgr=0.0, box=7.5, cache=False, cfg=None, channels_last=False, classes=None, close_mosaic=10, cls=0.5, cls_pw=0.0, cls_remap=True, compile=False, conf=None, copy_paste=0.0, copy_paste_mode=flip, cos_lr=False, cutmix=0.0, data=D:\dev\crop-detect\datasets\grape_cf_drop\data.yaml, degrees=0.0, deterministic=True, device=, dfl=1.5, dgrad=0.5, dis=6.0, distill_model=None, dlam=1.0, dlog=1.0, dnn=False, dropout=0.0, dynamic=False, embed=None, end2end=None, epochs=50, erasing=0.4, exist_ok=False, fliplr=0.5, flipud=0.0, format=torchscript, fraction=1.0, freeze=None, hsv_h=0.015, hsv_s=0.7, hsv_v=0.4, imgsz=640, iou=0.7, keras=False, kobj=1.0, line_width=None, lr0=0.01, lrf=0.01, mask_ratio=4, max_det=300, mixup=0.0, mode=train, model=D:\dev\crop-detect\runs\detect\E10a_drop\weights\last.pt, momentum=0.937, mosaic=1.0, multi_scale=0.0, name=E10a_drop, nbs=64, nms=False, opset=None, optimize=False, optimizer=auto, overlap_mask=True, patience=100, perspective=0.0, plots=True, pose=12.0, pretrained=True, profile=False, project=D:\dev\crop-detect\runs\detect, quantize=None, rect=False, resume=D:\dev\crop-detect\runs\detect\E10a_drop\weights\last.pt, retina_masks=False, rle=1.0, save=True, save_conf=False, save_crop=False, save_dir=D:\dev\crop-detect\runs\detect\E10a_drop, save_frames=False, save_json=False, save_period=-1, save_txt=False, scale=0.5, seed=0, shear=0.0, show=False, show_boxes=True, show_conf=True, show_labels=True, simplify=True, single_cls=False, source=None, split=val, stream_buffer=False, task=detect, time=None, tracker=tracktrack.yaml, translate=0.1, val=True, verbose=True, vid_stride=1, visualize=False, warmup_bias_lr=0.0, warmup_epochs=3.0, warmup_momentum=0.8, weight_decay=0.0005, workers=4, workspace=None
+WARNING ClearML installed but not initialized correctly, not logging this run. It seems ClearML is not configured on this machine!
+To get started with ClearML, setup your own 'clearml-server' or create a free account at https://app.clear.ml
+Setup instructions can be found here: https://clear.ml/docs
+
+                   from  n    params  module                                       arguments                     
+  0                  -1  1       464  ultralytics.nn.modules.conv.Conv             [3, 16, 3, 2]                 
+  1                  -1  1      4672  ultralytics.nn.modules.conv.Conv             [16, 32, 3, 2]                
+  2                  -1  1      6640  ultralytics.nn.modules.block.C3k2            [32, 64, 1, False, 0.25]      
+  3                  -1  1     36992  ultralytics.nn.modules.conv.Conv             [64, 64, 3, 2]                
+  4                  -1  1     26080  ultralytics.nn.modules.block.C3k2            [64, 128, 1, False, 0.25]     
+  5                  -1  1    147712  ultralytics.nn.modules.conv.Conv             [128, 128, 3, 2]              
+  6                  -1  1     87040  ultralytics.nn.modules.block.C3k2            [128, 128, 1, True]           
+  7                  -1  1    295424  ultralytics.nn.modules.conv.Conv             [128, 256, 3, 2]              
+  8                  -1  1    346112  ultralytics.nn.modules.block.C3k2            [256, 256, 1, True]           
+  9                  -1  1    164608  ultralytics.nn.modules.block.SPPF            [256, 256, 5]                 
+ 10                  -1  1    249728  ultralytics.nn.modules.block.C2PSA           [256, 256, 1]                 
+ 11                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']          
+ 12             [-1, 6]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
+ 13                  -1  1    111296  ultralytics.nn.modules.block.C3k2            [384, 128, 1, False]          
+ 14                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']          
+ 15             [-1, 4]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
+ 16                  -1  1     32096  ultralytics.nn.modules.block.C3k2            [256, 64, 1, False]           
+ 17                  -1  1     36992  ultralytics.nn.modules.conv.Conv             [64, 64, 3, 2]                
+ 18            [-1, 13]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
+ 19                  -1  1     86720  ultralytics.nn.modules.block.C3k2            [192, 128, 1, False]          
+ 20                  -1  1    147712  ultralytics.nn.modules.conv.Conv             [128, 128, 3, 2]              
+ 21            [-1, 10]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
+ 22                  -1  1    378880  ultralytics.nn.modules.block.C3k2            [384, 256, 1, True]           
+ 23        [16, 19, 22]  1    431647  ultralytics.nn.modules.head.Detect           [5, 16, None, [64, 128, 256]] 
+YOLO11n summary: 182 layers, 2,590,815 parameters, 2,590,799 gradients, 6.4 GFLOPs
+
+Transferred 499/499 items from pretrained weights
+Freezing layer 'model.23.dfl.conv.weight'
+[34m[1mAMP: [0mrunning Automatic Mixed Precision (AMP) checks...
+[34m[1mAMP: [0mchecks passed 
+[34m[1mtrain: [0mFast image access  (ping: 0.00.0 ms, read: 577.2396.2 MB/s, size: 37.9 KB)
+train: Scanning D:\dev\crop-detect\datasets\grape_cf_drop\train\labels.cache... 2354 images, 0 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 2354/2354  0.0s
+[34m[1malbumentations: [0mBlur(p=0.01, blur_limit=(3, 7)), MedianBlur(p=0.01, blur_limit=(3, 7)), ToGray(p=0.01, method='weighted_average', num_output_channels=3), CLAHE(p=0.01, clip_limit=(1.0, 4.0), tile_grid_size=(8, 8))
+[34m[1mval: [0mFast image access  (ping: 0.00.0 ms, read: 581.1229.6 MB/s, size: 42.8 KB)
+val: Scanning D:\dev\crop-detect\datasets\grape_cf_drop\valid\labels.cache... 292 images, 0 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 292/292  0.0s
+[34m[1moptimizer:[0m 'optimizer=auto' found, ignoring 'lr0=0.01' and 'momentum=0.937' and determining best 'optimizer', 'lr0' and 'momentum' automatically... 
+[34m[1moptimizer:[0m AdamW(lr=0.001111, momentum=0.9) with parameter groups 81 weight(decay=0.0), 88 weight(decay=0.0005), 87 bias(decay=0.0)
+Plotting labels to D:\dev\crop-detect\runs\detect\E10a_drop\labels.jpg... 
+Resuming training D:\dev\crop-detect\runs\detect\E10a_drop\weights\last.pt from epoch 46 to 50 total epochs
+Closing dataloader mosaic
+[34m[1malbumentations: [0mBlur(p=0.01, blur_limit=(3, 7)), MedianBlur(p=0.01, blur_limit=(3, 7)), ToGray(p=0.01, method='weighted_average', num_output_channels=3), CLAHE(p=0.01, clip_limit=(1.0, 4.0), tile_grid_size=(8, 8))
+WARNING [34m[1mMLflow: [0mFailed to initialize: The filesystem tracking backend (e.g., './mlruns') is in maintenance mode and will not receive further updates. Please migrate to a database backend (e.g., 'sqlite:///mlflow.db') to access the latest MLflow features. The `mlflow migrate-filestore` tool migrates your existing data losslessly. See https://mlflow.org/docs/latest/self-hosting/migrate-from-file-store for migration guidance. If the filesystem backend is required for your workflow, set `MLFLOW_ALLOW_FILE_STORE=true` to opt out of this exception.
+WARNING [34m[1mMLflow: [0mNot tracking this run
+Image sizes 640 train, 640 val
+Using 4 dataloader workers
+Logging results to [1mD:\dev\crop-detect\runs\detect\E10a_drop[0m
+Starting training for 50 epochs...
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+      46/50      1.12G      1.764     0.8385      1.246        104        640: 0% ──────────── 0/295  5.7s      46/50      1.17G      1.487     0.8118      1.268         29        640: 0% ──────────── 1/295 2.3it/s 5.8s<2:10      46/50      1.18G      1.421       0.98      1.316         37        640: 0% ──────────── 2/295 3.6it/s 6.0s<1:22      46/50      1.18G      1.438      0.998      1.315         37        640: 1% ──────────── 3/295 4.8it/s 6.1s<1:00      46/50      1.18G      1.402     0.9656       1.29         47        640: 1% ──────────── 4/295 5.5it/s 6.3s<52.7s      46/50      1.18G      1.385     0.9944      1.307         27        640: 1% ──────────── 5/295 6.3it/s 6.4s<46.0s      46/50      1.18G      1.399     0.9986      1.324         48        640: 2% ──────────── 6/295 6.6it/s 6.5s<43.8s      46/50      1.18G      1.417      1.025      1.348         38        640: 2% ──────────── 7/295 6.4it/s 6.7s<44.9s      46/50      1.18G      1.432       1.01      1.331         64        640: 2% ──────────── 8/295 6.5it/s 6.8s<44.4s      46/50      1.18G      1.418      1.022      1.337         37        640: 3% ──────────── 9/295 6.7it/s 7.0s<42.8s      46/50      1.18G      1.404      1.009      1.326         40        640: 3% ──────────── 10/295 7.0it/s 7.1s<40.8s      46/50      1.18G      1.413      1.009       1.32         56        640: 3% ──────────── 11/295 7.4it/s 7.2s<38.3s      46/50      1.18G      1.408      1.002      1.314         72        640: 4% ──────────── 12/295 7.6it/s 7.4s<37.2s      46/50      1.18G      1.409     0.9978      1.315         44        640: 4% ╸─────────── 13/295 7.4it/s 7.5s<38.1s      46/50      1.18G        1.4     0.9897      1.309         52        640: 4% ╸─────────── 14/295 7.1it/s 7.7s<39.7s      46/50      1.18G      1.405     0.9869      1.313         38        640: 5% ╸─────────── 15/295 6.2it/s 7.9s<44.8s      46/50      1.18G      1.422     0.9828      1.313         76        640: 5% ╸─────────── 16/295 5.2it/s 8.2s<53.4s

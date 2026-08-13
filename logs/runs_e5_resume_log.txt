@@ -1,0 +1,84 @@
+D:\dev\crop-detect\.venv\Lib\site-packages\albumentations\check_version.py:147: UserWarning: Error fetching version info <urlopen error [Errno 2] No such file or directory>
+  data = fetch_version_info()
+D:\dev\crop-detect\.venv\Lib\site-packages\rfdetr\models\weights.py:258: FutureWarning: target=True is deprecated since `v0.8`; use `TargetMode.ARGS_REMAP` instead. Will be removed in `v1.0`.
+  @deprecated(target=True, args_mapping={"train_config": None}, deprecated_in="1.7.0", remove_in="1.9.0", num_warns=-1)
+[2026-08-12 19:35:26] [INFO] rf-detr - File C:\Users\dell\.roboflow\models\rf-detr-nano.pth already exists with correct MD5 hash.
+[2026-08-12 19:35:26] [WARNING] rf-detr - Using a different number of positional encodings than DINOv2, which means we're not loading DINOv2 backbone weights. This is not a problem if finetuning a pretrained RF-DETR model.
+[2026-08-12 19:35:26] [WARNING] rf-detr - Using patch size 16 instead of 14, which means we're not loading DINOv2 backbone weights. This is not a problem if finetuning a pretrained RF-DETR model.
+[2026-08-12 19:35:27] [INFO] rf-detr - File C:\Users\dell\.roboflow\models\rf-detr-nano.pth already exists with correct MD5 hash.
+[2026-08-12 19:35:28] [WARNING] rf-detr - Pretrained weights at 'C:\\Users\\dell\\.roboflow\\models\\rf-detr-nano.pth' loaded only partially — this typically produces lower accuracy. 1 model parameter(s) not in checkpoint (left at random init): [_kp_active_mask]. Check that the model configuration (encoder, hidden_dim, out_feature_indexes, projector_scale, ...) matches the architecture the checkpoint was trained with.
+W0812 19:35:28.963000 11720 Lib\site-packages\torch\utils\flop_counter.py:29] triton not found; flop counting will not work for triton kernels
+[2026-08-12 19:35:29] [WARNING] rf-detr - Using a different number of positional encodings than DINOv2, which means we're not loading DINOv2 backbone weights. This is not a problem if finetuning a pretrained RF-DETR model.
+[2026-08-12 19:35:29] [WARNING] rf-detr - Using patch size 16 instead of 14, which means we're not loading DINOv2 backbone weights. This is not a problem if finetuning a pretrained RF-DETR model.
+[2026-08-12 19:35:30] [INFO] rf-detr - File C:\Users\dell\.roboflow\models\rf-detr-nano.pth already exists with correct MD5 hash.
+[2026-08-12 19:35:30] [WARNING] rf-detr - Checkpoint has 90 classes but model is configured for 7. The detection head will be re-initialized to 7 classes.
+[2026-08-12 19:35:30] [WARNING] rf-detr - Pretrained weights at 'C:\\Users\\dell\\.roboflow\\models\\rf-detr-nano.pth' loaded only partially — this typically produces lower accuracy. 1 model parameter(s) not in checkpoint (left at random init): [_kp_active_mask]. Check that the model configuration (encoder, hidden_dim, out_feature_indexes, projector_scale, ...) matches the architecture the checkpoint was trained with.
+Using bfloat16 Automatic Mixed Precision (AMP)
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.
+D:\dev\crop-detect\.venv\Lib\site-packages\lightning_fabric\loggers\csv_logs.py:268: Experiment logs directory D:\dev\crop-detect\runs_rfdetr\grape_nano_50ep\ exists and is not empty. Previous log files in this directory will be deleted when the new ones are saved!
+[2026-08-12 19:35:31] [INFO] rf-detr - Building Roboflow train dataset with square resize at resolution 384
+[2026-08-12 19:35:31] [INFO] rf-detr - Using multi-scale training with square resize and scales: [544]
+[2026-08-12 19:35:31] [INFO] rf-detr - Built 1 Albumentations transforms from config
+[2026-08-12 19:35:31] [WARNING] rf-detr - Keypoint pipeline: 'HorizontalFlip' performs a horizontal flip but no keypoint flip pairs were configured. The transform has been disabled to prevent incorrect keypoint annotations. Remove 'HorizontalFlip' from your augmentation config or provide keypoint_flip_pairs.
+loading annotations into memory...
+Done (t=0.17s)
+creating index...
+index created!
+[2026-08-12 19:35:31] [INFO] rf-detr - Building Roboflow val dataset with square resize at resolution 384
+[2026-08-12 19:35:31] [INFO] rf-detr - Using multi-scale training with square resize and scales: [544]
+[2026-08-12 19:35:31] [INFO] rf-detr - Built 1 Albumentations transforms from config
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+D:\dev\crop-detect\.venv\Lib\site-packages\pytorch_lightning\callbacks\model_checkpoint.py:881: Checkpoint directory D:\dev\crop-detect\runs_rfdetr\grape_nano_50ep exists and is not empty.
+Restoring states from the checkpoint path at D:\dev\crop-detect\runs_rfdetr\grape_nano_50ep\last.ckpt
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+Loading `train_dataloader` to estimate number of stepping batches.
+D:\dev\crop-detect\.venv\Lib\site-packages\pytorch_lightning\utilities\_pytree.py:21: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+D:\dev\crop-detect\.venv\Lib\site-packages\rfdetr\models\weights.py:258: FutureWarning: target=True is deprecated since `v0.8`; use `TargetMode.ARGS_REMAP` instead. Will be removed in `v1.0`.
+  @deprecated(target=True, args_mapping={"train_config": None}, deprecated_in="1.7.0", remove_in="1.9.0", num_warns=-1)
+W0812 19:35:41.708000 40432 Lib\site-packages\torch\utils\flop_counter.py:29] triton not found; flop counting will not work for triton kernels
+D:\dev\crop-detect\.venv\Lib\site-packages\albumentations\check_version.py:147: UserWarning: Error fetching version info <urlopen error _ssl.c:985: The handshake operation timed out>
+  data = fetch_version_info()
+D:\dev\crop-detect\.venv\Lib\site-packages\rfdetr\models\weights.py:258: FutureWarning: target=True is deprecated since `v0.8`; use `TargetMode.ARGS_REMAP` instead. Will be removed in `v1.0`.
+  @deprecated(target=True, args_mapping={"train_config": None}, deprecated_in="1.7.0", remove_in="1.9.0", num_warns=-1)
+W0812 19:35:50.145000 40744 Lib\site-packages\torch\utils\flop_counter.py:29] triton not found; flop counting will not work for triton kernels
+D:\dev\crop-detect\.venv\Lib\site-packages\pytorch_lightning\utilities\model_summary\model_summary.py:242: Precision bf16-mixed is not supported by the model summary.  Estimated model size in MB will not be accurate. Using 32 bits instead.
+┌───┬─────────────┬──────────────┬────────┬───────┬───────┐
+│   │ Name        │ Type         │ Params │ Mode  │ FLOPs │
+├───┼─────────────┼──────────────┼────────┼───────┼───────┤
+│ 0 │ model       │ LWDETR       │ 30.2 M │ train │     0 │
+│ 1 │ criterion   │ SetCriterion │      0 │ train │     0 │
+│ 2 │ postprocess │ PostProcess  │      0 │ train │     0 │
+└───┴─────────────┴──────────────┴────────┴───────┴───────┘
+Trainable params: 30.2 M                                                       
+Non-trainable params: 0                                                        
+Total params: 30.2 M                                                           
+Total estimated model params size (MB): 120.675                                
+Modules in train mode: 449                                                     
+Modules in eval mode: 0                                                        
+Total FLOPs: 0                                                                 
+Restored all states from the checkpoint at D:\dev\crop-detect\runs_rfdetr\grape_nano_50ep\last.ckpt
+D:\dev\crop-detect\.venv\Lib\site-packages\rfdetr\models\weights.py:258: FutureWarning: target=True is deprecated since `v0.8`; use `TargetMode.ARGS_REMAP` instead. Will be removed in `v1.0`.
+  @deprecated(target=True, args_mapping={"train_config": None}, deprecated_in="1.7.0", remove_in="1.9.0", num_warns=-1)
+D:\dev\crop-detect\.venv\Lib\site-packages\rfdetr\models\weights.py:258: FutureWarning: target=True is deprecated since `v0.8`; use `TargetMode.ARGS_REMAP` instead. Will be removed in `v1.0`.
+  @deprecated(target=True, args_mapping={"train_config": None}, deprecated_in="1.7.0", remove_in="1.9.0", num_warns=-1)
+              Val (Epoch 30/50) — Overall Metrics               
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃           mAP            ┃  mAR   ┃         F1 sweep         ┃
+┡━━━━━━━━┯━━━━━━━━┯━━━━━━━━╇━━━━━━━━╇━━━━━━━━┯━━━━━━━━┯━━━━━━━━┩
+│ 50:95  │   50   │   75   │  @500  │   F1   │  Prec  │ Recall │
+├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+│ 0.5964 │ 0.9367 │ 0.5395 │ 0.6550 │ 0.9221 │ 0.9645 │ 0.8856 │
+└────────┴────────┴────────┴────────┴────────┴────────┴────────┘
+                  Val (Epoch 30/50) — Per-class Metrics                   
+┌──────────────────────┬──────────┬────────┬────────┬───────────┬────────┐
+│ Class                │ AP 50:95 │     AR │     F1 │ Precision │ Recall │
+├──────────────────────┼──────────┼────────┼────────┼───────────┼────────┤
+│ grape black rot      │   0.4896 │ 0.5882 │ 0.8571 │    0.8936 │ 0.8235 │
+│ grape powdery mildew │   0.5261 │ 0.5600 │ 1.0000 │    1.0000 │ 1.0000 │
+│ mosaic virus disease │   0.7735 │ 0.8167 │ 0.9091 │    1.0000 │ 0.8333 │
+└──────────────────────┴──────────┴────────┴────────┴───────────┴────────┘

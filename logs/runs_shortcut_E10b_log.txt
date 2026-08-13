@@ -1,0 +1,11 @@
+======================================================================
+E9  跨物种阴性对照 —— 捷径学习的定量验证
+======================================================================
+  组别     E10b
+  权重     best.pt
+  阴性集   FieldPlant  5156 张 (木薯/玉米/番茄)
+  真值     全部为阴性——该数据集不含葡萄，故任何葡萄病害输出均为假阳性
+  阈值     conf=0.25  (与 §4.2 域偏移实验一致)
+  类别     ['grape black rot', 'grape botrytis cinerea', 'grape downy mildew', 'grape powdery mildew', 'grape ulcer disease', 'mosaic virus disease']
+
+  推理中 ...

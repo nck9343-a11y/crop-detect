@@ -1,0 +1,85 @@
+{
+  "config": {
+    "tag": "E1",
+    "weights": "D:\\dev\\crop-detect\\runs\\detect\\grape_n\\weights\\best.pt",
+    "conf": 0.25,
+    "n_images": 5156,
+    "classes": [
+      "grape black rot",
+      "grape botrytis cinerea",
+      "grape downy mildew",
+      "grape powdery mildew",
+      "grape ulcer disease",
+      "mosaic virus disease"
+    ]
+  },
+  "summary": {
+    "images_with_det": 3371,
+    "total_fp_boxes": 9176,
+    "fp_per_image": 1.7796741660201707
+  },
+  "class_counts": {
+    "mosaic virus disease": 5379,
+    "grape botrytis cinerea": 3537,
+    "grape downy mildew": 215,
+    "grape ulcer disease": 6,
+    "grape powdery mildew": 1,
+    "grape black rot": 38
+  },
+  "over_representation": {
+    "grape black rot": 0.01171982089006671,
+    "grape powdery mildew": 0.0005611905553708015,
+    "grape downy mildew": 0.16142936596218022,
+    "grape botrytis cinerea": 2.9850900225056263,
+    "grape ulcer disease": 0.005063765941485371,
+    "mosaic virus disease": 11.951366030283081
+  },
+  "dose_response": [
+    {
+      "lo": 0.0,
+      "hi": 0.05,
+      "n": 30,
+      "rate": 0.03333333333333333
+    },
+    {
+      "lo": 0.05,
+      "hi": 0.15,
+      "n": 169,
+      "rate": 0.1242603550295858
+    },
+    {
+      "lo": 0.15,
+      "hi": 0.3,
+      "n": 675,
+      "rate": 0.36148148148148146
+    },
+    {
+      "lo": 0.3,
+      "hi": 0.5,
+      "n": 1207,
+      "rate": 0.4763877381938691
+    },
+    {
+      "lo": 0.5,
+      "hi": 0.7,
+      "n": 1230,
+      "rate": 0.44227642276422763
+    },
+    {
+      "lo": 0.7,
+      "hi": 1.01,
+      "n": 1845,
+      "rate": 0.24173441734417345
+    }
+  ],
+  "target_pred_areas": {
+    "n": 5379,
+    "median": 0.04949833486746966,
+    "mean": 0.1318222146909721
+  },
+  "criteria": {
+    "A": true,
+    "B": false,
+    "C": false
+  }
+}

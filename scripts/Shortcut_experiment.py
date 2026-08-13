@@ -1,0 +1,302 @@
+"""
+E9: 跨物种阴性对照 —— 捷径学习的定量验证
+==========================================
+目的：把"标注粒度不一致诱导捷径学习"从推理链变成实验结论。
+
+背景：
+    E1 训练所用的葡萄数据集中，mosaic virus disease 一类的标注对象为整片叶片，
+    其标注框中位面积占比 43.16%，为其余五类中位数的 5.3-76 倍。
+    该类同时是样本最少（593 框）却 AP 最高（0.781）的类别。
+
+    据此提出假设：模型学到的并非花叶病毒的视觉特征，而是一条捷径——
+        "画面中存在占据大面积的、叶片形状的绿色区域" -> mosaic virus disease
+
+    此前的证据仅为 10 张自采手机照片 + 肉眼判断，样本量与判据均不足。
+
+本实验：
+    FieldPlant 数据集包含 5156 张木薯／玉米／番茄图像，
+    其中不可能存在葡萄花叶病毒。因此 E1 在这批图像上输出的
+    任何 mosaic virus disease 都是假阳性。
+
+    这批数据提供了两件此前没有的东西：
+      1. 三个数量级的样本量（5156 vs 10）
+      2. 客观判据（跨物种，真值必为阴性，无需人工判断症状）
+
+判据（三条独立证据，需同时成立）：
+    A 类别失衡   mosaic 在预测中的占比 >> 其在训练标注中的占比 4.9%
+    B 剂量-反应   P(预测为 mosaic) 随图像中最大绿色连通区域占比单调上升
+    C 框尺寸复现  预测为 mosaic 的框，其面积占比应复现训练标注的 ~43% 量级
+
+    三条同时成立 -> 捷径机制得到定量验证
+    仅 A 成立     -> 存在类别偏置，但未必是绿色大区域这条捷径
+    均不成立      -> 假设被证伪，§4.3 的归因需要重写
+
+用法：
+    python Shortcut_experiment.py
+"""
+
+import argparse
+import json
+import numpy as np
+import cv2
+from pathlib import Path
+from collections import Counter, defaultdict
+from ultralytics import YOLO
+
+# ------------------------------------------------------------------ 配置
+
+WEIGHTS = r'D:\dev\crop-detect\runs\detect\grape_n\weights\best.pt'   # E1
+FIELDPLANT = Path(r'D:\dev\crop-detect\datasets\fieldplant')
+OUT_DIR = Path(r'D:\dev\crop-detect\results\runs_shortcut')
+
+CONF = 0.25          # 部署时的常用阈值，与 §4.2 的域偏移实验一致
+IMGSZ = 640
+
+# 训练集中各类标注框占比（来自 datasets/grape_public 全量统计），
+# 用作"若无偏置，预测分布应大致相当"的参照基线
+TRAIN_PRIOR = {
+    'grape black rot':        0.353,
+    'grape powdery mildew':   0.194,
+    'grape downy mildew':     0.145,
+    'grape botrytis cinerea': 0.129,
+    'grape ulcer disease':    0.129,
+    'mosaic virus disease':   0.049,
+}
+TARGET = 'mosaic virus disease'
+
+# 训练标注中该类框的中位面积占比，用于判据 C
+TARGET_TRAIN_AREA = 0.4316
+
+GREEN_BINS = [0.0, 0.05, 0.15, 0.30, 0.50, 0.70, 1.01]   # 判据 B 的分组
+
+
+# ------------------------------------------------------------------ 绿色区域度量
+
+def green_metrics(img_bgr, max_side=512):
+    """
+    计算两个量，用于刻画"捷径触发条件"的强弱：
+        green_frac  绿色像素占全图比例
+        blob_frac   最大绿色连通区域占全图比例  <- 更贴近"一片大叶子"
+
+    用 blob_frac 而非 green_frac 作为主自变量：草地背景也能有很高的
+    绿色占比，但它是碎的；"整片叶片"的特征是单个大连通块。
+    """
+    h, w = img_bgr.shape[:2]
+    s = max_side / max(h, w)
+    if s < 1:
+        img_bgr = cv2.resize(img_bgr, (int(w * s), int(h * s)),
+                             interpolation=cv2.INTER_AREA)
+
+    hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
+    # OpenCV 的 H 取值 0-179，绿色大致落在 25-95
+    mask = cv2.inRange(hsv, np.array([25, 40, 40]), np.array([95, 255, 255]))
+    # 开运算去掉椒盐噪点，避免把碎草地算成连通块
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN,
+                            cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
+
+    total = mask.size
+    green_frac = float(mask.sum() / 255 / total)
+
+    n, _, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=8)
+    blob_frac = 0.0
+    if n > 1:
+        # stats[0] 是背景，取其余中面积最大者
+        blob_frac = float(stats[1:, cv2.CC_STAT_AREA].max() / total)
+    return green_frac, blob_frac
+
+
+# ------------------------------------------------------------------ 主流程
+
+def main():
+    ap = argparse.ArgumentParser(description='跨物种阴性对照')
+    ap.add_argument('--weights', default=WEIGHTS, help='待测权重')
+    ap.add_argument('--out', default=str(OUT_DIR), help='输出目录')
+    ap.add_argument('--tag', default='E1', help='本组的标签，用于结果文件命名')
+    ap.add_argument('--reduce', type=int, default=4, choices=[1, 2, 4],
+                    help='JPEG 解码降采样倍数。FieldPlant 为 13MP 原图，'
+                         '全分辨率解码 67ms/张而 1/4 仅 20ms，'
+                         '且图像最终统一缩至 640 送入模型，故不损失有效信息。'
+                         '各组必须取相同值，否则解码链路不同、结果不可比。')
+    args = ap.parse_args()
+    decode_flag = {1: cv2.IMREAD_COLOR,
+                   2: cv2.IMREAD_REDUCED_COLOR_2,
+                   4: cv2.IMREAD_REDUCED_COLOR_4}[args.reduce]
+
+    weights, out_dir, tag = args.weights, Path(args.out), args.tag
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    imgs = sorted([p for p in FIELDPLANT.rglob('*')
+                   if p.suffix.lower() in {'.jpg', '.jpeg', '.png'}])
+    if not imgs:
+        raise SystemExit(f'未找到图像: {FIELDPLANT}')
+
+    print('=' * 70)
+    print('E9  跨物种阴性对照 —— 捷径学习的定量验证')
+    print('=' * 70)
+    print(f'  组别     {tag}')
+    print(f'  权重     {Path(weights).name}')
+    print(f'  阴性集   FieldPlant  {len(imgs)} 张 (木薯/玉米/番茄)')
+    print(f'  真值     全部为阴性——该数据集不含葡萄，故任何葡萄病害输出均为假阳性')
+    print(f'  阈值     conf={CONF}  (与 §4.2 域偏移实验一致)')
+
+    model = YOLO(weights)
+    names = model.names
+    # drop 组的模型不含 mosaic 类，此时判据 B/C 无从谈起，
+    # 观察重点转为假阳性总量与类别分布是否发生转移。
+    has_target_cls = TARGET in names.values()
+    print(f'  类别     {list(names.values())}')
+    if not has_target_cls:
+        print(f'  注意     该模型不含 "{TARGET}"，将只报告假阳性总量与分布')
+
+    records = []
+    box_cls = Counter()          # 逐框的类别计数
+    img_with_det = 0
+
+    print(f'\n  推理中 ...')
+    for i, p in enumerate(imgs, 1):
+        img = cv2.imread(str(p), decode_flag)
+        if img is None:
+            continue
+        gf, bf = green_metrics(img)
+
+        # 直接把已解码的数组交给模型，避免让 ultralytics 再解码一次原图。
+        # FieldPlant 为 3456x3808 的手机原图，单次 JPEG 解码约 150-300ms，
+        # 重复解码会使全程耗时翻倍。
+        r = model.predict(img, imgsz=IMGSZ, conf=CONF,
+                          verbose=False, device=0)[0]
+        H, W = r.orig_shape
+        dets = []
+        for b in r.boxes:
+            x1, y1, x2, y2 = [float(v) for v in b.xyxy[0]]
+            dets.append({
+                'cls': names[int(b.cls[0])],
+                'conf': float(b.conf[0]),
+                'area_frac': (x2 - x1) * (y2 - y1) / (W * H),
+            })
+            box_cls[names[int(b.cls[0])]] += 1
+
+        if dets:
+            img_with_det += 1
+        top = max(dets, key=lambda d: d['conf']) if dets else None
+        records.append({
+            'file': p.name, 'green_frac': gf, 'blob_frac': bf,
+            'n_det': len(dets),
+            'top_cls': top['cls'] if top else None,
+            'top_conf': top['conf'] if top else 0.0,
+            'top_area': top['area_frac'] if top else 0.0,
+            'has_target': any(d['cls'] == TARGET for d in dets),
+            'target_areas': [d['area_frac'] for d in dets if d['cls'] == TARGET],
+        })
+        if i % 500 == 0:
+            print(f'    {i}/{len(imgs)}')
+
+    n = len(records)
+    total_boxes = sum(box_cls.values())
+
+    # ---------------- 判据 A：类别失衡 ----------------
+    print('\n' + '=' * 70)
+    print('判据 A  预测类别分布  vs  训练标注分布')
+    print('=' * 70)
+    print(f'{"类别":<26}{"预测框数":>10}{"预测占比":>10}{"训练占比":>10}{"过表达倍数":>12}')
+    print('-' * 70)
+    # drop 组的模型只有 5 类，其训练占比需在剩余类别上重新归一化，
+    # 否则过表达倍数会被系统性低估，与 6 类模型无法比较。
+    present = {c: p for c, p in TRAIN_PRIOR.items() if c in names.values()}
+    norm = sum(present.values())
+    prior_used = {c: p / norm for c, p in present.items()}
+
+    over = {}
+    for c, prior in sorted(prior_used.items(), key=lambda kv: -kv[1]):
+        cnt = box_cls.get(c, 0)
+        share = cnt / total_boxes if total_boxes else 0.0
+        ratio = share / prior if prior else 0.0
+        over[c] = ratio
+        mark = '  <<<' if c == TARGET else ''
+        print(f'{c:<26}{cnt:>10}{share:>9.1%}{prior:>10.1%}{ratio:>11.2f}x{mark}')
+    print('-' * 70)
+    print(f'  有输出的图像 {img_with_det}/{n} ({img_with_det / n:.1%})，共 {total_boxes} 个假阳性框')
+    A_ok = over.get(TARGET, 0) > 2.0
+
+    # ---------------- 判据 B：剂量-反应 ----------------
+    print('\n' + '=' * 70)
+    print('判据 B  P(预测含 mosaic) 随最大绿色连通区域占比的变化')
+    print('=' * 70)
+    print(f'{"blob_frac 区间":<20}{"图像数":>8}{"含mosaic":>10}{"比例":>10}')
+    print('-' * 70)
+    curve = []
+    for lo, hi in zip(GREEN_BINS[:-1], GREEN_BINS[1:]):
+        sub = [r for r in records if lo <= r['blob_frac'] < hi]
+        if not sub:
+            continue
+        k = sum(r['has_target'] for r in sub)
+        rate = k / len(sub)
+        curve.append({'lo': lo, 'hi': hi, 'n': len(sub), 'rate': rate})
+        bar = '#' * int(rate * 40)
+        print(f'{f"[{lo:.2f}, {hi:.2f})":<20}{len(sub):>8}{k:>10}{rate:>9.1%}  {bar}')
+    print('-' * 70)
+    # 单调性检验：相邻区间比例是否总体上升（允许个别回落）
+    rates = [c['rate'] for c in curve]
+    mono = sum(b >= a for a, b in zip(rates, rates[1:]))
+    B_ok = len(rates) >= 3 and rates[-1] > rates[0] * 1.5 and mono >= len(rates) - 2
+    if len(rates) >= 2:
+        print(f'  最低组 {rates[0]:.1%}  ->  最高组 {rates[-1]:.1%}'
+              f'   (相邻区间上升 {mono}/{len(rates) - 1} 次)')
+
+    # ---------------- 判据 C：框尺寸复现 ----------------
+    print('\n' + '=' * 70)
+    print('判据 C  预测框面积占比  vs  训练标注的面积占比')
+    print('=' * 70)
+    areas = defaultdict(list)
+    for r in records:
+        for a in r['target_areas']:
+            areas[TARGET].append(a)
+    ta = areas.get(TARGET, [])
+    C_ok = False
+    if ta:
+        med = float(np.median(ta))
+        C_ok = med > 0.20
+        print(f'  预测为 {TARGET} 的框: {len(ta)} 个')
+        print(f'    面积占比中位 {med:.1%}   均值 {np.mean(ta):.1%}   P90 {np.percentile(ta, 90):.1%}')
+        print(f'  训练标注中该类中位面积占比 {TARGET_TRAIN_AREA:.1%}')
+        print(f'  -> 模型在完全陌生的物种上，复现了训练标注的框尺寸特征'
+              if C_ok else '  -> 预测框尺寸与训练标注不匹配')
+    else:
+        print(f'  未产生任何 {TARGET} 预测框。')
+
+    # ---------------- 结论 ----------------
+    print('\n' + '=' * 70)
+    print('结论')
+    print('=' * 70)
+    print(f'  A 类别失衡    {"成立" if A_ok else "不成立"}  '
+          f'(mosaic 过表达 {over.get(TARGET, 0):.2f} 倍)')
+    print(f'  B 剂量-反应   {"成立" if B_ok else "不成立"}')
+    print(f'  C 框尺寸复现  {"成立" if C_ok else "不成立"}')
+    print('-' * 70)
+    if A_ok and B_ok and C_ok:
+        print('  三条证据同时成立：捷径机制得到定量验证。')
+        print('  §4.3 的归因可由推理链升级为实验结论，样本量 5156，判据客观。')
+    elif A_ok:
+        print('  存在显著类别偏置，但绿色大区域这条具体捷径未被完整证实，')
+        print('  需检查 blob_frac 是否恰当刻画了触发条件。')
+    else:
+        print('  假设未获支持，§4.3 的归因需要重写。')
+
+    res_path = out_dir / f'shortcut_{tag}.json'
+    json.dump({
+        'config': {'tag': tag, 'weights': weights, 'conf': CONF, 'n_images': n,
+                   'classes': list(names.values())},
+        'summary': {'images_with_det': img_with_det, 'total_fp_boxes': total_boxes,
+                    'fp_per_image': total_boxes / n if n else 0.0},
+        'class_counts': dict(box_cls), 'over_representation': over,
+        'dose_response': curve,
+        'target_pred_areas': {'n': len(ta),
+                              'median': float(np.median(ta)) if ta else None,
+                              'mean': float(np.mean(ta)) if ta else None},
+        'criteria': {'A': A_ok, 'B': B_ok, 'C': C_ok},
+    }, open(res_path, 'w'), ensure_ascii=False, indent=2)
+    json.dump(records, open(out_dir / f'per_image_{tag}.json', 'w'), ensure_ascii=False)
+    print(f'\n  已保存 -> {res_path}')
+
+
+if __name__ == '__main__':
+    main()

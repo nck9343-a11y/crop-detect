@@ -1,0 +1,56 @@
+# crop-detect 直接依赖
+# ============================================================
+# 只列本项目脚本里真正 import 的包，版本与 2026-08-12 的 .venv 一致。
+# 传递依赖（transformers / mlflow / wandb / supervision 等）由 pip 自动解析，
+# 若需完全一致的环境，见 requirements-lock.txt。
+#
+# 安装：
+#     python -m venv .venv
+#     .venv\Scripts\activate
+#     # 先按下方说明单独装 torch/torchvision，再执行：
+#     pip install -r requirements.txt
+
+# ---- 深度学习框架（需单独安装，见文末说明）----------------
+# torch==2.13.0+cu132
+# torchvision==0.28.0+cu132
+
+# ---- 检测模型 ----------------------------------------------
+ultralytics==8.4.106          # E1-E4  YOLO11n/s、RT-DETR 训练与推理
+rfdetr==1.8.3                 # E5     RF-DETR Nano 微调与评估
+sahi==0.12.2                  # E7     切图推理
+
+# ---- 评估 --------------------------------------------------
+pycocotools==2.0.11           # Eval_rfdetr / Eval_scale / Sahi_experiment 的 COCO 指标
+
+# ---- 空间格局分析 ------------------------------------------
+scipy==1.17.1                 # spatial_analysis.py 的距离矩阵
+
+# ---- 通用 --------------------------------------------------
+numpy==2.3.5
+matplotlib==3.11.1            # Plot_spatial.py 出图
+pillow==12.3.0
+PyYAML==6.0.3                 # stats.py 读 data.yaml
+
+
+# ============================================================
+# torch / torchvision 安装说明
+# ============================================================
+# 本项目使用 CUDA 13.2 专用轮子，pip 默认源没有，必须单独安装。
+# 原先此处用 file:///D:/dev/crop-detect/*.whl 的本地绝对路径固定，
+# 换目录或换机器即失效，故改为说明形式。
+#
+# 方式一（推荐，从官方源装）：
+#     pip install torch==2.13.0 torchvision==0.28.0 \
+#         --index-url https://download.pytorch.org/whl/cu132
+#
+# 方式二（用本地轮子，文件不在仓库内，需另行获取）：
+#     pip install torch-2.13.0+cu132-cp311-cp311-win_amd64.whl
+#     pip install torchvision-0.28.0+cu132-cp311-cp311-win_amd64.whl
+#
+# Python 版本：3.11（轮子标签 cp311，其他版本不兼容）
+#
+# ============================================================
+# 说明：标注工具不是项目依赖
+# ============================================================
+# 当前 .venv 里还装有 labelImg、x-anylabeling-cvhub、PyQt5 等标注工具，
+# 它们只在制作数据集时手工使用，不参与任何实验脚本，故不列入此文件。

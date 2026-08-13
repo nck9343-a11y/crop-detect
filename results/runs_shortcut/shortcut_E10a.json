@@ -1,0 +1,82 @@
+{
+  "config": {
+    "tag": "E10a",
+    "weights": "D:\\dev\\crop-detect\\runs\\detect\\E10a_drop\\weights\\best.pt",
+    "conf": 0.25,
+    "n_images": 5156,
+    "classes": [
+      "grape black rot",
+      "grape botrytis cinerea",
+      "grape downy mildew",
+      "grape powdery mildew",
+      "grape ulcer disease"
+    ]
+  },
+  "summary": {
+    "images_with_det": 3063,
+    "total_fp_boxes": 7056,
+    "fp_per_image": 1.3685027152831652
+  },
+  "class_counts": {
+    "grape botrytis cinerea": 5350,
+    "grape downy mildew": 1225,
+    "grape ulcer disease": 23,
+    "grape black rot": 456,
+    "grape powdery mildew": 2
+  },
+  "over_representation": {
+    "grape black rot": 0.17392226012217918,
+    "grape powdery mildew": 0.0013880122495733688,
+    "grape downy mildew": 1.1374521072796935,
+    "grape botrytis cinerea": 5.583790363690695,
+    "grape ulcer disease": 0.02400508006820299
+  },
+  "dose_response": [
+    {
+      "lo": 0.0,
+      "hi": 0.05,
+      "n": 30,
+      "rate": 0.0
+    },
+    {
+      "lo": 0.05,
+      "hi": 0.15,
+      "n": 169,
+      "rate": 0.0
+    },
+    {
+      "lo": 0.15,
+      "hi": 0.3,
+      "n": 675,
+      "rate": 0.0
+    },
+    {
+      "lo": 0.3,
+      "hi": 0.5,
+      "n": 1207,
+      "rate": 0.0
+    },
+    {
+      "lo": 0.5,
+      "hi": 0.7,
+      "n": 1230,
+      "rate": 0.0
+    },
+    {
+      "lo": 0.7,
+      "hi": 1.01,
+      "n": 1845,
+      "rate": 0.0
+    }
+  ],
+  "target_pred_areas": {
+    "n": 0,
+    "median": null,
+    "mean": null
+  },
+  "criteria": {
+    "A": false,
+    "B": false,
+    "C": false
+  }
+}

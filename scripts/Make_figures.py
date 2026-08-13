@@ -182,10 +182,17 @@ def fig2_overexpression():
 # --------------------------------------------------------------------------
 def fig3_counterfactual():
     """三组反事实的每图假阳性。网格纹使灰度印刷下两系列仍可区分。"""
+    # 一律由原始计数导出，不从每图值反推——后者已四舍五入到三位小数，
+    # 反推出的百分比会与表 13 差一个进位（botrytis 的 +3.53% 会算成 +3%）。
+    # 计数取自 results/runs_shortcut/shortcut_{E1,E10b,E12}.json
+    N_IMG = 5156
     groups = ['E1 原标注', '缩 mosaic 框', '缩 botrytis 框']
-    mosaic = [1.043, 0.350, 0.579]
-    botrytis = [0.686, 0.710, 0.108]
+    cnt_mosaic = [5379, 1805, 2987]
+    cnt_botrytis = [3537, 3662, 556]
     totals = [9176, 5971, 3956]
+
+    mosaic = [c / N_IMG for c in cnt_mosaic]
+    botrytis = [c / N_IMG for c in cnt_botrytis]
 
     x = np.arange(3)
     w = 0.26
@@ -200,12 +207,12 @@ def fig3_counterfactual():
             ax.text(r.get_x() + r.get_width() / 2, v + 0.022, f'{v:.3f}',
                     ha='center', fontsize=7.5, color=INK)
 
-    for i, (m, b) in enumerate(zip(mosaic[1:], botrytis[1:]), start=1):
+    for i in (1, 2):
         ax.text(i - w / 2, mosaic[i] + 0.075,
-                f'{(m / mosaic[0] - 1) * 100:+.0f}%', ha='center',
+                f'{(cnt_mosaic[i] / cnt_mosaic[0] - 1) * 100:+.0f}%', ha='center',
                 fontsize=7.5, color=ORANGE)
         ax.text(i + w / 2, botrytis[i] + 0.075,
-                f'{(b / botrytis[0] - 1) * 100:+.0f}%', ha='center',
+                f'{(cnt_botrytis[i] / cnt_botrytis[0] - 1) * 100:+.0f}%', ha='center',
                 fontsize=7.5, color=BLUE)
 
     ax.set_xticks(x)

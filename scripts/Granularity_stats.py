@@ -89,8 +89,11 @@ def analyse(key, root, note):
     for cid, v in areas.items():
         per_class[names[cid] if cid < len(names) else f'class_{cid}'] = describe(v)
 
-    med = np.array([s['median'] for s in per_class.values()])
-    span = float(med.max() / np.median(med))
+    med = np.sort(np.array([s['median'] for s in per_class.values()]))[::-1]
+    span = float(med[0] / np.median(med))
+    # 最粗类与次粗类之比：R 只说明"有多不齐"，这一项说明"最粗的那一类是否孤立"。
+    # 两者可以分离——一个数据集可以整体很粗（R 小）却仍有孤立的最粗类，反之亦然。
+    gap = float(med[0] / med[1]) if med.size > 1 else float('nan')
     coarse = [n for n, s in per_class.items() if s['median'] >= COARSE]
     fine = [n for n, s in per_class.items() if s['median'] <= FINE]
 
@@ -99,6 +102,7 @@ def analyse(key, root, note):
         'n_classes': len(per_class),
         'n_boxes': int(sum(s['n'] for s in per_class.values())),
         'span_R': span,
+        'top_gap': gap,
         'median_of_class_medians': float(np.median(med)),
         'coarse_classes': coarse,
         'fine_classes': fine,
@@ -116,8 +120,9 @@ def analyse(key, root, note):
         print(f'{n[:33]:<34}{s["n"]:>8}{s["median"] * 100:>9.2f}%{s["p90"] * 100:>8.2f}%'
               f'{s["frac_gt30"] * 100:>7.1f}%{s["frac_lt10"] * 100:>7.1f}%{flag}')
     print('-' * 92)
-    print(f'  类间中位数 {np.median(med) * 100:.2f}%   最粗类 {med.max() * 100:.2f}%   '
-          f'粒度跨度 R = {span:.1f}x')
+    print(f'  类间中位数 {np.median(med) * 100:.2f}%   最粗类 {med[0] * 100:.2f}%   '
+          f'次粗类 {med[1] * 100:.2f}%')
+    print(f'  粒度跨度 R = {span:.1f}x     最粗/次粗 = {gap:.2f}x')
     print(f'  整叶级类别: {coarse if coarse else "无"}')
     print(f'  粒度不一致: {"是" if res["inconsistent"] else "否"}')
     return res

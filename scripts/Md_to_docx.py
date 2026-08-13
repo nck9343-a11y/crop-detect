@@ -12,8 +12,9 @@
 
 import re
 import sys
+from pathlib import Path
 from docx import Document
-from docx.shared import Pt, RGBColor
+from docx.shared import Pt, RGBColor, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 
@@ -121,6 +122,20 @@ def convert(md_path, out_path):
                     add_inline(cells[k].paragraphs[0], v, size=9.5)
             doc.add_paragraph()
             i = j
+            continue
+
+        # ---- 图片：![alt](相对路径) 独占一行 ----
+        m = re.fullmatch(r'!\[[^\]]*\]\(([^)]+)\)', st)
+        if m:
+            img = (Path(md_path).parent / m.group(1)).resolve()
+            if img.exists():
+                p = doc.add_paragraph()
+                p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                # 正文宽度约 15.9 cm（A4 减默认页边距），留出余量
+                p.add_run().add_picture(str(img), width=Cm(13.5))
+            else:
+                print(f'  [警告] 图片不存在，已跳过: {img}')
+            i += 1
             continue
 
         # ---- 标题 ----

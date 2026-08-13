@@ -89,11 +89,30 @@ def split_row(line):
     return [c.strip() for c in line.strip().strip('|').split('|')]
 
 
-def convert(md_path, out_path):
-    lines = open(md_path, encoding='utf-8').read().split('\n')
+def convert(md_paths, out_path):
+    """md_paths 可以是一个路径，也可以是多个——多个时依次拼接并在之间分页。
+
+    arXiv 要求多语言投稿合为单一文件且英文在前，故 English + Chinese 两份
+    markdown 可直接一起传入。
+    """
+    if isinstance(md_paths, (str, Path)):
+        md_paths = [md_paths]
+
     doc = Document()
     doc.styles['Normal'].font.name = '宋体'
     doc.styles['Normal'].font.size = Pt(10.5)
+
+    for n, md_path in enumerate(md_paths):
+        if n:
+            doc.add_page_break()
+        _render(doc, md_path)
+
+    doc.save(out_path)
+    print(f'已生成 {out_path}')
+
+
+def _render(doc, md_path):
+    lines = open(md_path, encoding='utf-8').read().split('\n')
 
     i = 0
     while i < len(lines):
@@ -199,12 +218,10 @@ def convert(md_path, out_path):
         p.paragraph_format.first_line_indent = Pt(21)   # 中文段落首行缩进两字
         add_inline(p, join_wrapped(buf))
 
-    doc.save(out_path)
-    print(f'已生成 {out_path}')
-
 
 if __name__ == '__main__':
     ROOT = r'D:\dev\crop-detect'
-    src = sys.argv[1] if len(sys.argv) > 1 else rf'{ROOT}\paper\论文.md'
-    dst = sys.argv[2] if len(sys.argv) > 2 else rf'{ROOT}\paper\论文.docx'
-    convert(src, dst)
+    if len(sys.argv) > 2:
+        convert(sys.argv[1:-1], sys.argv[-1])
+    else:
+        convert(rf'{ROOT}\paper\论文.md', rf'{ROOT}\paper\论文.docx')

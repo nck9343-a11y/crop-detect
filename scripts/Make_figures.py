@@ -37,6 +37,29 @@ ROOT = Path(r'D:\dev\crop-detect')
 OUT = ROOT / 'paper' / 'figures'
 GRAPE = ROOT / 'datasets' / 'grape_public'
 
+LANG = 'zh'          # 由命令行 --lang en 切换
+
+L = {
+ 'zh': dict(
+    xlabel1='标注框面积占全图比例（对数刻度）', median='中位', n='n = ',
+    xlabel2='占比 / %', legend_train='训练集中的标注框占比',
+    legend_pred='跨物种阴性图像上的假阳性占比', over='过表达 13.41×',
+    area='框中位面积 {:.2f}%',
+    ylabel3='每图假阳性框数', total='假阳性总数 {}',
+    groups=['E1 原标注', '缩 mosaic 框', '缩 botrytis 框'],
+ ),
+ 'en': dict(
+    xlabel1='Box area as a fraction of the image (log scale)',
+    median='median', n='n = ',
+    xlabel2='Share / %', legend_train='Share of boxes in the training set',
+    legend_pred='Share of false positives on cross-species images',
+    over='13.41× over-representation',
+    area='median box area {:.2f}%',
+    ylabel3='False positives per image', total='total FP {}',
+    groups=['E1 (original)', 'mosaic shrunk', 'botrytis shrunk'],
+ ),
+}
+
 ORANGE, BLUE = '#eb6834', '#2a78d6'
 INK, MUTED, GRID = '#0b0b0b', '#898781', '#e1e0d9'
 TARGET = 'mosaic virus disease'
@@ -75,6 +98,8 @@ def setup():
 
 def save(fig, name):
     OUT.mkdir(parents=True, exist_ok=True)
+    if LANG != 'zh':
+        name = f'{name}_{LANG}'
     fig.savefig(OUT / f'{name}.pdf')
     fig.savefig(OUT / f'{name}.png', dpi=300)
     plt.close(fig)
@@ -120,14 +145,15 @@ def fig1_granularity(areas):
         ax.text(0.012, 0.72, f'{cls}', transform=ax.transAxes,
                 fontsize=8, color=INK, fontweight='bold' if hit else 'normal')
         ax.text(0.012, 0.30,
-                f'中位 {np.median(v) * 100:.2f}%    n = {v.size}',
+                f'{L[LANG]["median"]} {np.median(v) * 100:.2f}%    '
+                f'{L[LANG]["n"]}{v.size}',
                 transform=ax.transAxes, fontsize=7.5, color=MUTED)
 
     axes[0].text(0.10, 1.28, '10%', transform=axes[0].get_xaxis_transform(),
                  ha='center', fontsize=7, color=MUTED)
     axes[0].text(0.30, 1.28, '30%', transform=axes[0].get_xaxis_transform(),
                  ha='center', fontsize=7, color=MUTED)
-    axes[-1].set_xlabel('标注框面积占全图比例（对数刻度）')
+    axes[-1].set_xlabel(L[LANG]['xlabel1'])
     axes[-1].set_xticks([1e-4, 1e-3, 1e-2, 1e-1, 1])
     axes[-1].set_xticklabels(['0.01%', '0.1%', '1%', '10%', '100%'])
     fig.align_labels()
@@ -156,26 +182,28 @@ def fig2_overexpression():
         ax.scatter([pr], [y], s=42, color=c, zorder=3)
         ax.text(-3.2, y, cls, ha='right', va='center', fontsize=8,
                 color=INK, fontweight='bold' if cls == TARGET else 'normal')
-        ax.text(-3.2, y - 0.34, f'框中位面积 {area:.2f}%', ha='right', va='center',
+        ax.text(-3.2, y - 0.34, L[LANG]['area'].format(area), ha='right', va='center',
                 fontsize=7, color=MUTED)
         if cls == TARGET:
-            ax.annotate('过表达 13.41×', xy=(pr, y), xytext=(pr - 4, y + 0.42),
+            ax.annotate(L[LANG]['over'], xy=(pr, y), xytext=(pr - 4, y + 0.42),
                         fontsize=7.5, color=ORANGE, ha='right')
 
     ax.set_xlim(-2, 72)
     ax.set_ylim(-0.7, len(rows) - 0.35)
     ax.set_yticks([])
-    ax.set_xlabel('占比 / %')
+    ax.set_xlabel(L[LANG]['xlabel2'])
     ax.xaxis.grid(True, lw=0.5)
     ax.set_axisbelow(True)
     for s in ('top', 'right', 'left'):
         ax.spines[s].set_visible(False)
 
     ax.scatter([], [], s=42, facecolor='white', edgecolor=MUTED, linewidth=1.4,
-               label='训练集中的标注框占比')
-    ax.scatter([], [], s=42, color=MUTED, label='跨物种阴性图像上的假阳性占比')
-    ax.legend(loc='lower right', fontsize=7.5, handletextpad=0.4,
-              labelcolor=INK, borderpad=0.2)
+               label=L[LANG]['legend_train'])
+    ax.scatter([], [], s=42, color=MUTED, label=L[LANG]['legend_pred'])
+    # 放在中右侧的空白区：除首行外各行的哑铃都止于 x<36，此处不会压到数据。
+    # 英文图例比中文长得多，若沿用 lower right 会压住末行。
+    ax.legend(loc='center right', bbox_to_anchor=(1.0, 0.34), fontsize=7.5,
+              handletextpad=0.4, labelcolor=INK, borderpad=0.2)
     save(fig, 'fig2_overexpression')
 
 
@@ -186,7 +214,7 @@ def fig3_counterfactual():
     # 反推出的百分比会与表 13 差一个进位（botrytis 的 +3.53% 会算成 +3%）。
     # 计数取自 results/runs_shortcut/shortcut_{E1,E10b,E12}.json
     N_IMG = 5156
-    groups = ['E1 原标注', '缩 mosaic 框', '缩 botrytis 框']
+    groups = L[LANG]['groups']
     cnt_mosaic = [5379, 1805, 2987]
     cnt_botrytis = [3537, 3662, 556]
     totals = [9176, 5971, 3956]
@@ -218,9 +246,9 @@ def fig3_counterfactual():
     ax.set_xticks(x)
     ax.set_xticklabels(groups)
     for i, t in enumerate(totals):
-        ax.text(i, -0.19, f'假阳性总数 {t}', ha='center', fontsize=7.5,
+        ax.text(i, -0.19, L[LANG]['total'].format(t), ha='center', fontsize=7.5,
                 color=MUTED, transform=ax.get_xaxis_transform())
-    ax.set_ylabel('每图假阳性框数')
+    ax.set_ylabel(L[LANG]['ylabel3'])
     ax.set_ylim(0, 1.28)
     ax.yaxis.grid(True, lw=0.5)
     ax.set_axisbelow(True)
@@ -231,7 +259,11 @@ def fig3_counterfactual():
 
 
 def main():
+    global LANG
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    if '--lang' in sys.argv:
+        LANG = sys.argv[sys.argv.index('--lang') + 1]
+    print(f'语言：{LANG}')
     setup()
     if not CJK.exists():
         print('  [警告] 未找到中文字体 simhei.ttf，中文将显示为方块')

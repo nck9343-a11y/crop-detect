@@ -10,7 +10,7 @@
 |---|---|
 | `论文.md` / `论文.docx` | 中文正文，投 chinaXiv 用 |
 | `paper_en.md` / `paper_en.docx` | 英文正文 |
-| `arxiv_bilingual.docx` | **英文在前 + 中文在后**，合为单一文件，投 arXiv 用 |
+| `arxiv_bilingual.docx` | 双语合订本，**不用于投稿**，留作自用或给他人通读 |
 | `figures/fig*_en.*` | 英文标注版插图（英文正文引用的是这一套） |
 
 重新生成：
@@ -18,7 +18,9 @@
 ```bash
 python scripts/Make_figures.py              # 中文插图
 python scripts/Make_figures.py --lang en    # 英文插图
-python scripts/Md_to_docx.py paper/paper_en.md paper/论文.md paper/arxiv_bilingual.docx
+python scripts/Md_to_docx.py paper/paper_en.md paper/paper_en.docx        # arXiv 用
+python scripts/Md_to_docx.py paper/论文.md paper/论文.docx                  # ChinaXiv 用
+python scripts/Md_to_docx.py paper/paper_en.md paper/论文.md paper/arxiv_bilingual.docx   # 自用合订
 ```
 
 导出 PDF：用 Word 打开 docx → 另存为 PDF。本机没有 LaTeX 与 pandoc，
@@ -27,18 +29,27 @@ python scripts/Md_to_docx.py paper/paper_en.md paper/论文.md paper/arxiv_bilin
 
 ---
 
-## 二、arXiv 的语言要求（2026-02-11 起生效，务必遵守）
+## 二、投稿形态：两个平台各投单语版本
 
-官方帮助页 https://info.arxiv.org/help/faq/multilang.html 的操作性规定：
+**英文版 → arXiv，中文版 → ChinaXiv，各自单语，都是正常形态。**
 
-- **所有投稿必须有完整英文版**，可以是原文，也可以是随附的翻译；
-- **两种语言必须合为单一文件，且英文在前**——原文："Please prepare your
-  submission so that the English language version appears first, followed by
-  the non-English language version."
-- **元数据字段只能容纳有限的非 ASCII 字符**，因此标题与摘要字段填英文；
-- **Comments 字段须注明正文语言**。
+arXiv 自 2026-02-11 起要求"所有投稿必须有完整英文版"
+（https://info.arxiv.org/help/faq/multilang.html ）。该要求在正文本身即为英文时
+自动满足——需要把两种语言合订、且英文在前的，只是正文为非英文的情形。
+因此英文单投无需任何特殊处理。
 
-`arxiv_bilingual.docx` 已按此顺序装配。
+不采用双语合订的理由：篇幅翻倍，同一内容在一份 PDF 里出现两遍，
+读者与 moderator 都不便，而且 arXiv 上极少有人这样做。
+`arxiv_bilingual.docx` 保留自用即可。
+
+**建议两版互相交叉引用。** 同一工作以两种语言发布于两个预印本平台是常见做法，
+但宜在各自的 Comments 字段（或正文脚注）注明另一语言版本的所在，例如：
+
+- arXiv 英文版 Comments：`A Chinese version of this work is available at ChinaXiv: [ID/链接]`
+- ChinaXiv 中文版备注：`本文英文版见 arXiv:[ID]`
+
+这不是任一平台的硬性规定，但可避免"重复发布"的误会，也方便读者找到对应版本。
+先投的那一版拿到编号后，补进后投的那一版即可。
 
 关于 AI 翻译：Nature 与 Slator 的报道称 arXiv 接受 AI 翻译，只要忠实于原文；
 但**官方帮助页未就此作出规定**。本文英文版由 AI 辅助完成，已作全篇数字比对
@@ -100,9 +111,8 @@ a blind spot in judging whether a public dataset is fit for use.
 ### Comments
 
 ```
-Main text in Chinese with a full English version included; the English version
-appears first. 26 pages, 3 figures, 16 tables. Code and evaluation artifacts:
-[仓库地址，推送后填入]
+3 figures, 16 tables. A Chinese version of this work is available at ChinaXiv:
+[编号，投出后填入]. Code and evaluation artifacts: [仓库地址，推送后填入]
 ```
 
 ### License
@@ -122,6 +132,8 @@ appears first. 26 pages, 3 figures, 16 tables. Code and evaluation artifacts:
 - [ ] 通读英文版，确认翻译忠实（责任在作者，见第二节）
 - [ ] 英文版插图引用的是 `fig*_en`，确认 docx 中显示正确
 - [ ] AI 声明：两版正文末尾均已包含，措辞覆盖脚本编写与结果复核
+- [ ] **单位用学校官方英文名**，不要自行翻译
+- [ ] 两版互相交叉引用：先投的拿到编号后，补进另一版的 Comments
 - [ ] 仓库地址：GitHub 推送后填入 Comments 字段与正文附录
 - [ ] 确认目标期刊（若后续投稿）对预印本的政策——chinaXiv 由中科院建设，
       其定位即为保护首发权并与期刊衔接；国际期刊多数接受 arXiv 预印本
@@ -133,4 +145,5 @@ appears first. 26 pages, 3 figures, 16 tables. Code and evaluation artifacts:
 1. **先确认 endorsement**（10 分钟，决定 arXiv 走不走得通）
 2. **填作者信息**
 3. **投 chinaXiv**：中文稿即为可投状态，先占住首发权
-4. **投 arXiv**：用 `arxiv_bilingual.docx` 导出的 PDF
+4. **投 arXiv**：用 `paper_en.docx` 导出的 PDF（英文单语）
+5. 两边都出来后，互相补上对方的编号

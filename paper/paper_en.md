@@ -551,71 +551,79 @@ The overarching question of this paper is which intrinsic properties of a public
 
 ## References
 
-> Bibliographic details (authors, title, journal, volume, issue, pages, DOI) were verified item by item against the Crossref and arXiv APIs on 2026-08-13. Format follows GB/T 7714. Items [6], [7] and [9] were still arXiv preprints as of the verification date, with no record of formal publication.
+> Bibliographic details (authors, title, venue, volume, issue, pages, DOI) were
+> verified item by item against the Crossref and arXiv APIs on 2026-08-13.
+> References follow IEEE style. Entries [6], [7] and [9] were still arXiv
+> preprints as of the verification date, with no record of formal publication.
+> Where the full author list could not be verified, "et al." is used.
 
-[1]　Geirhos R, Jacobsen J H, Michaelis C, et al. Shortcut learning in deep neural
-　　networks[J]. Nature Machine Intelligence, 2020, 2(11): 665-673.
-　　DOI: 10.1038/s42256-020-00257-z
+[1] R. Geirhos, J.-H. Jacobsen, C. Michaelis, R. Zemel, W. Brendel, M. Bethge, and
+F. A. Wichmann, "Shortcut learning in deep neural networks," *Nature Machine
+Intelligence*, vol. 2, no. 11, pp. 665–673, 2020, doi: 10.1038/s42256-020-00257-z.
 
-[2]　Zech J R, Badgeley M A, Liu M, et al. Variable generalization performance of a deep
-　　learning model to detect pneumonia in chest radiographs: A cross-sectional study[J].
-　　PLOS Medicine, 2018, 15(11): e1002683. DOI: 10.1371/journal.pmed.1002683
+[2] J. R. Zech, M. A. Badgeley, M. Liu, et al., "Variable generalization performance
+of a deep learning model to detect pneumonia in chest radiographs: A cross-sectional
+study," *PLOS Medicine*, vol. 15, no. 11, p. e1002683, 2018,
+doi: 10.1371/journal.pmed.1002683.
 
-[3]　Beery S, Van Horn G, Perona P. Recognition in Terra Incognita[C]//European Conference
-　　on Computer Vision (ECCV). Lecture Notes in Computer Science, 2018: 472-489.
-　　DOI: 10.1007/978-3-030-01270-0_28
+[3] S. Beery, G. Van Horn, and P. Perona, "Recognition in Terra Incognita," in *Proc.
+European Conf. Computer Vision (ECCV)*, Lecture Notes in Computer Science, 2018,
+pp. 472–489, doi: 10.1007/978-3-030-01270-0_28.
 
-[4]　Lapuschkin S, Wäldchen S, Binder A, et al. Unmasking Clever Hans predictors and
-　　assessing what machines really learn[J]. Nature Communications, 2019, 10(1): 1096.
-　　DOI: 10.1038/s41467-019-08987-4
+[4] S. Lapuschkin, S. Wäldchen, A. Binder, et al., "Unmasking Clever Hans predictors
+and assessing what machines really learn," *Nature Communications*, vol. 10, no. 1,
+p. 1096, 2019, doi: 10.1038/s41467-019-08987-4.
 
-[5]　Northcutt C G, Athalye A, Mueller J. Pervasive label errors in test sets destabilize
-　　machine learning benchmarks[C]//35th Conference on Neural Information Processing
-　　Systems (NeurIPS 2021), Track on Datasets and Benchmarks. 2021. arXiv:2103.14749
+[5] C. G. Northcutt, A. Athalye, and J. Mueller, "Pervasive label errors in test sets
+destabilize machine learning benchmarks," in *Proc. 35th Conf. Neural Information
+Processing Systems (NeurIPS), Datasets and Benchmarks Track*, 2021, arXiv:2103.14749.
 
-[6]　Beyer L, Hénaff O J, Kolesnikov A, et al. Are we done with ImageNet?[EB/OL].
-　　arXiv:2006.07159, 2020-06-12.
+[6] L. Beyer, O. J. Hénaff, A. Kolesnikov, X. Zhai, and A. van den Oord, "Are we done
+with ImageNet?" arXiv:2006.07159, Jun. 2020.
 
-[7]　Hughes D P, Salathé M. An open access repository of images on plant health to enable
-　　the development of mobile disease diagnostics[EB/OL]. arXiv:1511.08060, 2015-11-25.
-　　(the PlantVillage dataset)
+[7] D. P. Hughes and M. Salathé, "An open access repository of images on plant health
+to enable the development of mobile disease diagnostics," arXiv:1511.08060, Nov. 2015.
+(the PlantVillage dataset)
 
-[8]　Mohanty S P, Hughes D P, Salathé M. Using deep learning for image-based plant disease
-　　detection[J]. Frontiers in Plant Science, 2016, 7: 1419. DOI: 10.3389/fpls.2016.01419
+[8] S. P. Mohanty, D. P. Hughes, and M. Salathé, "Using deep learning for image-based
+plant disease detection," *Frontiers in Plant Science*, vol. 7, p. 1419, 2016,
+doi: 10.3389/fpls.2016.01419.
 
-[9]　Noyan M A. Uncovering bias in the PlantVillage dataset[EB/OL]. arXiv:2206.04374,
-　　2022-06-09.
+[9] M. A. Noyan, "Uncovering bias in the PlantVillage dataset," arXiv:2206.04374,
+Jun. 2022.
 
-[10]　Moupojou E, Tagne A, Retraint F, et al. FieldPlant: A dataset of field plant images
-　　for plant disease detection and classification with deep learning[J]. IEEE Access,
-　　2023, 11: 35398-35410. DOI: 10.1109/ACCESS.2023.3263042
+[10] E. Moupojou, A. Tagne, F. Retraint, et al., "FieldPlant: A dataset of field plant
+images for plant disease detection and classification with deep learning," *IEEE
+Access*, vol. 11, pp. 35398–35410, 2023, doi: 10.1109/ACCESS.2023.3263042.
 
-[11]　Nikouei M, Baroutian B, Nabavi S, et al. Small object detection: A comprehensive
-　　survey on challenges, techniques and real-world applications[J]. Intelligent Systems
-　　with Applications, 2025, 27: 200561. DOI: 10.1016/j.iswa.2025.200561
+[11] M. Nikouei, B. Baroutian, S. Nabavi, F. Taraghi, A. Aghaei, and A. Sajedi, "Small
+object detection: A comprehensive survey on challenges, techniques and real-world
+applications," *Intelligent Systems with Applications*, vol. 27, p. 200561, 2025,
+doi: 10.1016/j.iswa.2025.200561.
 
-[12]　Akyon F C, Altinuc S O, Temizel A. Slicing aided hyper inference and fine-tuning for
-　　small object detection[C]//IEEE International Conference on Image Processing (ICIP).
-　　2022: 966-970. DOI: 10.1109/ICIP46576.2022.9897990 (SAHI)
+[12] F. C. Akyon, S. O. Altinuc, and A. Temizel, "Slicing aided hyper inference and
+fine-tuning for small object detection," in *Proc. IEEE Int. Conf. Image Processing
+(ICIP)*, 2022, pp. 966–970, doi: 10.1109/ICIP46576.2022.9897990.
 
-[13]　Bolya D, Foley S, Hays J, et al. TIDE: A general toolbox for identifying object
-　　detection errors[C]//European Conference on Computer Vision (ECCV). Lecture Notes in
-　　Computer Science, 2020: 558-573. DOI: 10.1007/978-3-030-58580-8_33
+[13] D. Bolya, S. Foley, J. Hays, and J. Hoffman, "TIDE: A general toolbox for
+identifying object detection errors," in *Proc. European Conf. Computer Vision (ECCV)*,
+Lecture Notes in Computer Science, 2020, pp. 558–573,
+doi: 10.1007/978-3-030-58580-8_33.
 
-[14]　Lin T Y, Maire M, Belongie S, et al. Microsoft COCO: Common objects in context[C]//
-　　European Conference on Computer Vision (ECCV). Lecture Notes in Computer Science,
-　　2014: 740-755. DOI: 10.1007/978-3-319-10602-1_48
-　　(source of the scale bands and of the pycocotools evaluation implementation)
+[14] T.-Y. Lin, M. Maire, S. Belongie, et al., "Microsoft COCO: Common objects in
+context," in *Proc. European Conf. Computer Vision (ECCV)*, Lecture Notes in Computer
+Science, 2014, pp. 740–755, doi: 10.1007/978-3-319-10602-1_48. (source of the scale
+bands and of the pycocotools evaluation implementation)
 
-[15]　Ultralytics. YOLO11: Version 8.4.106 [CP/OL]. (2026-08-13) [2026-08-13].
-　　https://github.com/ultralytics/ultralytics
+[15] Ultralytics, "YOLO11, version 8.4.106." [Online]. Available:
+https://github.com/ultralytics/ultralytics (accessed Aug. 13, 2026).
 
-[16]　Roboflow. RF-DETR: Version 1.8.3 [CP/OL]. (2026-08-13) [2026-08-13].
-　　https://github.com/roboflow/rf-detr
+[16] Roboflow, "RF-DETR, version 1.8.3." [Online]. Available:
+https://github.com/roboflow/rf-detr (accessed Aug. 13, 2026).
 
-[17]　Zhao Y, Lv W, Xu S, et al. DETRs beat YOLOs on real-time object detection[C]//IEEE/CVF
-　　Conference on Computer Vision and Pattern Recognition (CVPR). 2024: 16965-16974.
-　　DOI: 10.1109/CVPR52733.2024.01605 (RT-DETR)
+[17] Y. Zhao, W. Lv, S. Xu, et al., "DETRs beat YOLOs on real-time object detection,"
+in *Proc. IEEE/CVF Conf. Computer Vision and Pattern Recognition (CVPR)*, 2024,
+pp. 16965–16974, doi: 10.1109/CVPR52733.2024.01605.
 
 ---
 

@@ -1,8 +1,8 @@
 # Shortcut Learning in a Public Grape Disease Dataset: The Causal Role of Inconsistent Annotation Granularity, and Its Limits
 
-**Author**　`[Name]`
+**Author** `[Name]`
 
-**Affiliation**　`[Department / Institution]`
+**Affiliation** `[Department / Institution]`
 
 ---
 
@@ -65,7 +65,7 @@ Existing criticism is directed mainly at **acquisition conditions** (controlled 
 
 ### 2.1 Dataset
 
-The main experiments use the grape disease detection dataset **grape** published on Roboflow Universe (workspace `wscs`, project identifier `grape-uyimv`, version 1, released 2025-11-03, licensed CC BY 4.0, at https://universe.roboflow.com/wscs/grape-uyimv ), comprising 3288 images, 11995 annotation boxes and 6 classes, split 2631／329／328. Images were preprocessed by the platform to 640×640 (stretch resize after EXIF orientation stripping) with no image augmentation applied. The annotation target is lesion-level objects, averaging 3.65 boxes per image. The dataset is published by a platform user without a named author; in accordance with CC BY 4.0, the address above is given as the attribution.
+The main experiments use the grape disease detection dataset **grape** published on Roboflow Universe (workspace `wscs`, project identifier `grape-uyimv`, version 1, released 2025-11-03, licensed CC BY 4.0, at https://universe.roboflow.com/wscs/grape-uyimv ), comprising 3288 images, 11995 annotation boxes and 6 classes, split 2631/329/328. Images were preprocessed by the platform to 640×640 (stretch resize after EXIF orientation stripping) with no image augmentation applied. The annotation target is lesion-level objects, averaging 3.65 boxes per image. The dataset is published by a platform user without a named author; in accordance with CC BY 4.0, the address above is given as the attribution.
 
 **Table 1 Class distribution**
 
@@ -101,7 +101,7 @@ The accurate statement is therefore this: that class is annotated predominantly 
 
 ![Figure 1](figures/fig1_granularity_en.png)
 
-**Figure 1**　Distribution of relative box area for the six classes (logarithmic abscissa; dashed lines mark the 10% and 30% decision thresholds). The five lesion-level classes concentrate below 10%; mosaic virus disease sits alone at another order of magnitude and is clearly bimodal — the right peak corresponds to whole-leaf annotation, the left peak to the lesion-level boxes mixed in.
+**Figure 1** Distribution of relative box area for the six classes (logarithmic abscissa; dashed lines mark the 10% and 30% decision thresholds). The five lesion-level classes concentrate below 10%; mosaic virus disease sits alone at another order of magnitude and is clearly bimodal — the right peak corresponds to whole-leaf annotation, the left peak to the lesion-level boxes mixed in.
 
 The dataset also contains images composited from several photographs. In one instance, a leaf photograph in the upper-left region of a single image is labelled mosaic virus disease (15.4% of the image) while the berry region on the right carries nine small grape powdery mildew boxes — **two granularities within one image**, a direct manifestation of a non-uniform annotation standard.
 
@@ -173,7 +173,7 @@ Two supplementary remarks.
 
 First, each group in Table 3 reports a single run at seed 0. For E1, seed 0 happens to be the highest of the five (0.8357), 1.08 percentage points above the five-seed mean — a deviation of the same magnitude as the 1.54-point between-group range. Using single runs for between-group comparison is unreliable at this data scale.
 
-Second, the number of repetitions itself must be sufficient. Taking AP_medium as an example, the first three seeds give 0.3788／0.3820／0.3847 with a standard deviation of only 0.0030, apparently extremely stable; extending to five seeds (adding 0.3263 and 0.3588) raises the standard deviation to 0.0245, eight times the original. A variance estimate at n = 3 can badly understate the true variation, and significance judged on that basis readily yields wrong conclusions.
+Second, the number of repetitions itself must be sufficient. Taking AP_medium as an example, the first three seeds give 0.3788/0.3820/0.3847 with a standard deviation of only 0.0030, apparently extremely stable; extending to five seeds (adding 0.3263 and 0.3588) raises the standard deviation to 0.0245, eight times the original. A variance estimate at n = 3 can badly understate the true variation, and significance judged on that basis readily yields wrong conclusions.
 
 The seed-to-seed variation of the **per-class** AP for the same set of weights was computed separately, to serve as the noise reference for the counterfactual comparison in Section 4.4; the values appear in the last column of Table 10. The relative standard deviation lies between 1.0% and 5.6% across classes, largest for grape botrytis cinerea (117 test instances, the fewest), whose relative range across the five runs reaches 15.5%. **Seed-to-seed variation of per-class metrics is appreciably larger than that of aggregate metrics, and any single-run per-class comparison must take this as its noise floor.**
 
@@ -287,7 +287,7 @@ Of the 5156 images, 3697 (71.7%) produced output, for a total of 12221 false-pos
 
 ![Figure 2](figures/fig2_overexpression_en.png)
 
-**Figure 2**　Share of annotation boxes in the training set (hollow) against share of false positives on cross-species negative images (filled), for each class, ordered top to bottom by decreasing median training box area. Every class other than mosaic virus disease has a false-positive share below its training share; that one class — the most coarsely annotated and the least frequent in training — moves sharply in the opposite direction, from 4.9% to 65.7%.
+**Figure 2** Share of annotation boxes in the training set (hollow) against share of false positives on cross-species negative images (filled), for each class, ordered top to bottom by decreasing median training box area. Every class other than mosaic virus disease has a false-positive share below its training share; that one class — the most coarsely annotated and the least frequent in training — moves sharply in the opposite direction, from 4.9% to 65.7%.
 
 **One necessary exclusion.** The most over-represented class happens to be the rarest in the training set (4.9%). A class-frequency prior would only cause high-frequency classes to be over-predicted, the direction opposite to what is observed (Spearman correlation −0.638). The bias therefore cannot be attributed to class imbalance.
 
@@ -396,7 +396,7 @@ To exclude the blanket explanation that "any perturbation of annotations reduces
 
 ![Figure 3](figures/fig3_counterfactual_en.png)
 
-**Figure 3**　False-positive boxes per image on cross-species negative images for the three counterfactual groups (quarter-resolution decoding); percentages are changes relative to E1 with original annotations, and the total false-positive count is given below each group. The middle group demonstrates the specificity of the effect (the manipulated mosaic falls by 66% while the unmanipulated botrytis does not move); the right-hand group demonstrates the difference in direction between the two mechanisms — shrinking botrytis lowers its own false positives by 84% while the unmanipulated mosaic also falls by 44%, the opposite of the rise that the sink mechanism acting alone would produce.
+**Figure 3** False-positive boxes per image on cross-species negative images for the three counterfactual groups (quarter-resolution decoding); percentages are changes relative to E1 with original annotations, and the total false-positive count is given below each group. The middle group demonstrates the specificity of the effect (the manipulated mosaic falls by 66% while the unmanipulated botrytis does not move); the right-hand group demonstrates the difference in direction between the two mechanisms — shrinking botrytis lowers its own false positives by 84% while the unmanipulated mosaic also falls by 44%, the opposite of the rise that the sink mechanism acting alone would produce.
 
 The effect concentrates on the manipulated class: shrinking mosaic lowers its false positives by 66% while botrytis barely moves (+4%); shrinking botrytis lowers its own by 84%. This excludes the explanation that perturbing annotations reduces false positives in general.
 
@@ -462,7 +462,7 @@ It must be emphasised that the altitudes above are a necessary condition only. T
 
 **We first give a screening statistic that can be applied before the data is used.** The phenomenon of Section 4 originates in the inconsistency of annotation granularity across classes, and that inconsistency can be computed directly without reading a single image or training a single model. Let *m*<sub>c</sub> be the median relative area of the annotation boxes of class *c* (under normalised YOLO coordinates the relative area is simply *w*×*h*), and let
 
-　　*R* = max<sub>c</sub>(*m*<sub>c</sub>) / median<sub>c</sub>(*m*<sub>c</sub>)
+  *R* = max<sub>c</sub>(*m*<sub>c</sub>) / median<sub>c</sub>(*m*<sub>c</sub>)
 
 characterise how far the coarsest class departs from a typical class. The denominator is the median across classes rather than the minimum, so that a single extremely fine class cannot inflate it. The decision thresholds are set a priori: *m*<sub>c</sub> ≥ 30% is recorded as whole-leaf level (a box covering more than three tenths of the image cannot enclose a single lesion), *m*<sub>c</sub> ≤ 10% as lesion level, with no determination made in between.
 
@@ -470,10 +470,10 @@ characterise how far the coarsest class departs from a typical class. The denomi
 
 **Table 16 Annotation granularity of two datasets under a single protocol**
 
-| Dataset | Classes | Boxes | Median *m* across classes | Coarsest *m* | *m*<sub>(1)</sub>/*m*<sub>(2)</sub> | Whole-leaf／lesion classes | Granularity spread *R* |
+| Dataset | Classes | Boxes | Median *m* across classes | Coarsest *m* | *m*<sub>(1)</sub>/*m*<sub>(2)</sub> | Whole-leaf/lesion classes | Granularity spread *R* |
 |---|---|---|---|---|---|---|---|
-| Main dataset (grape) | 6 | 11995 | 2.84% | 43.16% | **5.32×** | 1／5 | **15.2×** |
-| FieldPlant (cassava／maize／tomato) | 27 | 8580 | 33.49% | 87.46% | 1.06× | 17／1 | 2.6× |
+| Main dataset (grape) | 6 | 11995 | 2.84% | 43.16% | **5.32×** | 1/5 | **15.2×** |
+| FieldPlant (cassava/maize/tomato) | 27 | 8580 | 33.49% | 87.46% | 1.06× | 17/1 | 2.6× |
 
 The two indices differ in their sensitivity to small classes. Restricting the classes entering the statistic to those with at least 10, 30 and 100 boxes, the main dataset stays at 15.2× and 5.32× throughout (its smallest class still has 593 boxes, so thresholds have no effect); for FieldPlant, *R* remains stable between 2.4× and 2.7× while *m*<sub>(1)</sub>/*m*<sub>(2)</sub> rises from 1.06× to 1.89×, because removing small classes changes which class heads the ranking. Even at the top of that interval it remains far below the 5.32× of the main dataset.
 
@@ -627,7 +627,7 @@ pp. 16965–16974, doi: 10.1109/CVPR52733.2024.01605.
 
 ---
 
-## Appendix　Reproducibility
+## Appendix Reproducibility
 
 All experiments fix the random seed and are reproducible under identical software and hardware. The environment is Windows, RTX 4060 Laptop 8 GB, PyTorch 2.13.0+cu132, Python 3.11. Peak GPU memory use is 2.8 GB (YOLO11s, batch 8, resolution 640), far below the 8 GB limit — training and deployment of this approach do not depend on high-performance computing equipment.
 

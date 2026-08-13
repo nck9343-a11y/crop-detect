@@ -19,7 +19,17 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 
 
-def set_cn_font(run, name='宋体', size=10.5, bold=False):
+# 按语言选字体：英文正文若沿用宋体，一眼即可看出是从中文模板生成的。
+FONTS = {
+    'zh': dict(body='宋体', head='黑体', indent=21),   # 首行缩进两个汉字
+    'en': dict(body='Times New Roman', head='Times New Roman', indent=18),
+}
+LANG = 'zh'
+
+
+def set_cn_font(run, name=None, size=10.5, bold=False):
+    if name is None:
+        name = FONTS[LANG]['body']
     run.font.name = name
     run.font.size = Pt(size)
     run.bold = bold
@@ -98,17 +108,27 @@ def convert(md_paths, out_path):
     if isinstance(md_paths, (str, Path)):
         md_paths = [md_paths]
 
+    global LANG
+    LANG = detect_lang(md_paths[0])
     doc = Document()
-    doc.styles['Normal'].font.name = '宋体'
+    doc.styles['Normal'].font.name = FONTS[LANG]['body']
     doc.styles['Normal'].font.size = Pt(10.5)
 
     for n, md_path in enumerate(md_paths):
         if n:
             doc.add_page_break()
+        LANG = detect_lang(md_path)      # 合订本里两种语言各用各的字体
         _render(doc, md_path)
 
     doc.save(out_path)
     print(f'已生成 {out_path}')
+
+
+def detect_lang(md_path):
+    """按汉字占比判定语言。合订本中每份文件各自判定。"""
+    t = open(md_path, encoding='utf-8').read()
+    cjk = sum('一' <= c <= '鿿' for c in t)
+    return 'zh' if cjk / max(len(t), 1) > 0.05 else 'en'
 
 
 def _render(doc, md_path):
@@ -163,7 +183,8 @@ def _render(doc, md_path):
             lvl, txt = len(m.group(1)), m.group(2)
             p = doc.add_paragraph()
             sizes = {1: 16, 2: 14, 3: 12, 4: 11}
-            set_cn_font(p.add_run(txt), name='黑体', size=sizes.get(lvl, 11), bold=True)
+            set_cn_font(p.add_run(txt), name=FONTS[LANG]['head'],
+                        size=sizes.get(lvl, 11), bold=True)
             if lvl == 1:
                 p.alignment = WD_ALIGN_PARAGRAPH.CENTER
             i += 1
@@ -215,7 +236,7 @@ def _render(doc, md_path):
             buf.append(nxt)
             i += 1
         p = doc.add_paragraph()
-        p.paragraph_format.first_line_indent = Pt(21)   # 中文段落首行缩进两字
+        p.paragraph_format.first_line_indent = Pt(FONTS[LANG]['indent'])
         add_inline(p, join_wrapped(buf))
 
 

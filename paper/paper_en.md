@@ -1,8 +1,8 @@
 # Shortcut Learning in a Public Grape Disease Dataset: The Causal Role of Inconsistent Annotation Granularity, and Its Limits
 
-**Author** `[Name]`
+**Author**  Pushuo Wang
 
-**Affiliation** `[Department / Institution]`
+**Affiliation**  School of Information and Control Engineering, Shenyang Institute of Technology, Fushun, Liaoning, China
 
 ---
 

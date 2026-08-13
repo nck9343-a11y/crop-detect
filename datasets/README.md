@@ -36,23 +36,28 @@ python scripts/Counterfactual_prepare.py --only e12   # 生成 grape_cf_placebo
 与 `path:` 拼接后会指向数据集目录之外，只靠框架的回退搜索才能工作；
 `Counterfactual_prepare.py` 生成的 yaml 已改为正确的相对路径。
 
-## ⚠ 主数据集的许可问题（投稿前必须解决）
+## 主数据集的许可
 
-`grape_public/data.yaml` 的导出记录里写的是：
+`grape_coco/README.dataset.txt`（Roboflow 在下载时生成的归属声明）记录：
 
-```yaml
-license: Private
-url: https://app.roboflow.com/wscs/grape-uyimv/1
+```
+# grape > 2025-11-03 9:39am
+https://universe.roboflow.com/wscs/grape-uyimv
+Provided by a Roboflow user
+License: CC BY 4.0
 ```
 
-`app.roboflow.com` 是**私有工作区**地址，不是 `universe.roboflow.com` 的公开地址；
-许可字段是 `Private`，而不是论文早先声称的 CC BY 4.0。
+即该数据集在 Roboflow **Universe** 上公开发布，许可为 **CC BY 4.0**，可再分发，
+但须标注出处。论文 2.1 节已以上述地址作为出处标注。
 
-在确认清楚之前：
+需要留意一处记录不一致：`grape_public/data.yaml` 的 `roboflow:` 段写的是
+`license: Private`、地址为 `app.roboflow.com/...`（工作区内部链接）。
+两份文件来自不同的导出途径——`grape_coco` 自 Universe 下载，
+`grape_public` 自工作区导出——后者的 license 字段反映导出时的工作区设置，
+不是项目对外声明的许可。以 `README.dataset.txt` 为准。
 
-- **不要**把该数据集上传到本仓库或其他公开位置；
-- 论文正文只写可核实的项目标识，不声明许可类型（当前状态）；
-- 需要确认的是：该项目是从 Roboflow Universe fork 到私有工作区的，
-  还是原本就是私有的。若为前者，应引用**原始公开项目**的地址与许可。
+FieldPlant 同为 CC BY 4.0，引用条目见论文参考文献 [10]。
 
-FieldPlant 为 CC BY 4.0，可正常引用与再分发，引用条目见论文参考文献 [10]。
+**关于是否随仓库分发**：CC BY 4.0 允许再分发，因此不上传的原因只剩体积
+（图像合计 7.5 GB）。若需要让他人复核论文表 2、表 16 与图 1 的粒度统计，
+可只分发标注文件（YOLO 格式的 `labels/`，合计数 MB），并保留本节的出处标注。

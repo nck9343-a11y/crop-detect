@@ -3,6 +3,7 @@
 # 获取与重建方式见 datasets/README.md
 datasets/*
 !datasets/README.md
+!datasets/README.en.md
 
 # ---- 模型权重 ----------------------------------------------
 # 单文件 116 MB–462 MB，超过 GitHub 100 MB 的单文件硬限制

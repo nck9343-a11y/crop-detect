@@ -37,6 +37,59 @@ E9: 跨物种阴性对照 —— 捷径学习的定量验证
 
 用法：
     python Shortcut_experiment.py
+
+
+================================ ENGLISH ================================
+
+E9: cross-species negative control - quantitative test of shortcut learning
+
+Purpose: turn "inconsistent annotation granularity induces shortcut learning"
+from a chain of reasoning into an experimental result.
+
+Background:
+    In the grape dataset used to train E1, the class `mosaic virus disease` is
+    annotated at whole-leaf level: median box area 43.16% of the image, 5.3x to
+    76x the medians of the other five classes. It is simultaneously the rarest
+    class (593 boxes) and the highest-scoring one (AP 0.781).
+
+    Hypothesis: the model has not learnt the visual features of mosaic virus,
+    but a shortcut -
+        "a large, leaf-shaped green region fills the frame" -> mosaic virus disease
+
+    The prior evidence was 10 self-collected phone photos judged by eye:
+    inadequate in both sample size and criteria.
+
+This experiment:
+    FieldPlant contains 5156 cassava / maize / tomato images, in which grape
+    mosaic virus cannot occur. Every `mosaic virus disease` box E1 emits on
+    these images is therefore a false positive.
+
+    This gives two things the earlier evidence lacked:
+      1. three orders of magnitude more images (5156 vs 10)
+      2. an objective criterion (cross-species: ground truth is negative by
+         construction, no human judgement of symptoms required)
+
+Criteria (three independent lines of evidence, all required):
+    A  class imbalance   share of mosaic in predictions >> its 4.9% share of
+                         the training annotations
+    B  dose-response     P(predict mosaic) rises monotonically with the largest
+                         connected green region in the image
+    C  box-size echo     boxes predicted as mosaic should reproduce the ~43%
+                         area share of the training annotations
+
+    all three hold  -> the shortcut mechanism is quantitatively verified
+    only A holds    -> a class bias exists, but not necessarily via large green
+                       regions
+    none holds      -> this specific rule is refuted
+
+The actual outcome was "only A holds": the class bias is pronounced, but the
+large-green-region rule was not supported, and Section 4.3 retracts it. The
+attribution mechanism is carried instead by the counterfactual retraining of
+Section 4.4; from that point on this script is used to re-measure the
+false-positive distribution of each counterfactual group.
+
+Usage:
+    python Shortcut_experiment.py
 """
 
 import argparse
@@ -80,6 +133,23 @@ GREEN_BINS = [0.0, 0.05, 0.15, 0.30, 0.50, 0.70, 1.01]   # 判据 B 的分组
 
 
 # ================================================================ E13 预注册判据
+#                                                   E13 PRE-REGISTERED CRITERIA
+#
+# [EN] The criteria below were written into this file before the E13 group
+#      finished training, and are derived from the screening statistics of
+#      grape_cf_expand - not from any observed false-positive count. The
+#      conclusion is fixed before the result is seen. Section 4.4 / Result 5 of
+#      the paper rests on this block; readers checking that claim should read
+#      BR_CUTS, MO_CUTS, E13_BASELINE and E13_TABLE below. The verdict these
+#      yield is written to results/runs_shortcut/shortcut_E13.json under the
+#      `prereg_verdict` key, alongside the raw false-positive counts.
+#
+#      Why this is not rigged: substituting the E1 baseline values into
+#      E13_TABLE lands on ('<2%', '基本不变') = "H3 证伪" (H3 refuted). That is,
+#      "nothing changed" necessarily falls on the refuting side, so the table
+#      cannot manufacture a confirmation. All nine cells carry a pre-assigned
+#      reading - leaving any cell blank would leave room for post-hoc
+#      interpretation.
 #
 # 结论必须在看到结果之前定死。以下判据于训练完成前写入本文件，
 # 依据是 grape_cf_expand 的筛查量，而非任何实测的假阳性数字。
@@ -94,8 +164,20 @@ GREEN_BINS = [0.0, 0.05, 0.15, 0.30, 0.50, 0.70, 1.01]   # 判据 B 的分组
 # 而是汇点在两个并列粗类之间分裂。若实测证实，则 m1/m2 由描述量升格为
 # 有预测力的量，这比单纯的双向对称更强。
 #
+# [EN] By the screening statistics of Section 5.2, the expand group belongs to
+#      the "several equally coarse classes, no isolated sink" regime - the
+#      FieldPlant type. The prediction is therefore NOT that the sink migrates
+#      wholesale to black rot, but that it splits between the two equally coarse
+#      classes. Confirmation would promote m1/m2 from a descriptive statistic to
+#      a predictive one, which is a stronger claim than plain two-way symmetry.
+#
 # 主指标为原始预测占比：expand 组的框数由 4237 降至 476，训练占比
 # 35.3% -> 5.8%，过表达倍数的分母缩小 6.1 倍会机械抬高倍数。
+#
+# [EN] The primary measure is the raw predicted share, not the over-representation
+#      ratio: the expand group's box count drops from 4237 to 476 and its share of
+#      the annotations from 35.3% to 5.8%, so a denominator 6.1x smaller would
+#      inflate the ratio mechanically.
 #
 # E1 基线（results/runs_shortcut/shortcut_E1.json，9176 个假阳性框）：
 #     black rot    38 / 9176 =  0.41%
@@ -104,10 +186,31 @@ E13_BASELINE = {'grape black rot': 0.0041, 'mosaic virus disease': 0.5862}
 
 # 分档阈值。黑腐病三档由 2%/10% 切分；mosaic 三档为
 #   显著下降 <40%   中等下降 40%~53.6%（较基线降 5 个百分点以上）   基本不变 >=53.6%
+#
+# [EN] Band thresholds. Black rot is split at 2% / 10%. Mosaic's three bands are
+#      显著下降 (marked drop, <40%), 中等下降 (moderate drop, 40%-53.6%, i.e. at
+#      least 5 percentage points below baseline), 基本不变 (essentially unchanged,
+#      >=53.6%).
 BR_CUTS = (0.02, 0.10)
 MO_CUTS = (0.40, 0.536)
 
 # 3x3 决策表。九格全部有归属——留空档等于给事后解释留口子。
+#
+# [EN] The 3x3 decision table, keyed (black-rot band, mosaic band). All nine cells
+#      carry a pre-assigned reading. English glosses of each verdict:
+#        H1 成立            = H1 holds: the sink migrates with granularity
+#        H1 成立（分裂型）  = H1 holds, split form: the two equally coarse classes
+#                             share the sink - the expected outcome for this group
+#        未预见 A / B       = unforeseen A / B: outcomes the hypotheses did not
+#                             anticipate, each with a prescribed follow-up check
+#        H2 部分成立        = H2 partly holds: granularity biases attribution but
+#                             cannot capture the sink
+#        H3 证伪            = H3 refuted: granularity is not sufficient to create
+#                             a sink; the attribution mechanism of 4.4 must be
+#                             rewritten
+#      The `reading` strings below are written verbatim into shortcut_E13.json;
+#      they are left in Chinese so that re-running this script reproduces the
+#      published artifact byte for byte.
 E13_TABLE = {
     ('>10%', '显著下降'): (
         'H1 成立',

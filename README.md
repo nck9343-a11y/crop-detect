@@ -8,13 +8,15 @@ Modulator, Not a Cause*
 一份论文的完整实验代码、日志与产物。中文正文见 [`paper/论文.md`](paper/论文.md)，
 英文正文见 [`paper/paper_en.md`](paper/paper_en.md)。
 
+**English readers: see [`README.en.md`](README.en.md) for the full English version.**
+
 ---
 
 ## English overview
 
-Code, logs and experimental artifacts for the paper above. The main text of the
-README is in Chinese; this section is a short guide for readers arriving from the
-preprint.
+Code, logs and experimental artifacts for the paper above. This section is a short
+guide for readers arriving from the preprint; the **full English version of this
+README is at [`README.en.md`](README.en.md)**.
 
 **What the paper reports.** In one public grape disease detection dataset (3288
 images, 11995 boxes, 6 classes), one class is annotated at whole-leaf level (median
@@ -217,10 +219,8 @@ python scripts/Md_to_docx.py             # paper/论文.md -> paper/论文.docx
 ```
 paper/            论文与投稿材料
   论文.md            正文（唯一正式版本，改这一份）
-  submission_checklist.md   修改记录 + 投稿前待办清单
   ai_disclosure.md          生成式 AI 使用声明（四个版本备选）
   related_work_framework.md 相关工作的文献素材
-  field_collection_protocol.md  田间采集规程
   drafts/          历史草稿，仅本地保留，不入库
 
 scripts/          全部实验脚本，均可独立运行
@@ -258,5 +258,4 @@ E5 使用的 RF-DETR 为 Apache 2.0，约束较少。
 
 英文版准备投 arXiv（cs.CV，交叉 cs.LG），中文版投 ChinaXiv。拿到编号后回填此处。
 
-投稿备忘见 [`paper/arxiv_submission.md`](paper/arxiv_submission.md)，
-早期的修改记录与待办见 [`paper/submission_checklist.md`](paper/submission_checklist.md)。
+投稿备忘见 [`paper/arxiv_submission.md`](paper/arxiv_submission.md)。

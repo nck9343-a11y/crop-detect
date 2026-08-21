@@ -83,7 +83,7 @@ def build_cf_ann(out_path, cf_test):
                          'area': bw * bh, 'iscrowd': 0})
             aid += 1
     out['annotations'] = anns
-    json.dump(out, open(out_path, 'w'), ensure_ascii=False)
+    json.dump(out, open(out_path, 'w', encoding='utf-8'), ensure_ascii=False)
     print(f'  构造 CF 标注：{len(raw["images"]) - missing} 张图，{len(anns)} 个框'
           f'（原 {len(raw["annotations"])} 个）')
     if missing:
@@ -111,7 +111,7 @@ def predict(weights, images, img_dir, out_path):
                           'score': float(b.conf[0])})
         if i % 100 == 0:
             print(f'    {i}/{len(images)}')
-    json.dump(preds, open(out_path, 'w'))
+    json.dump(preds, open(out_path, 'w', encoding='utf-8'))
     print(f'  {len(preds)} 个预测框 -> {out_path.name}')
     return out_path
 
@@ -197,7 +197,7 @@ def main():
     # shrink 组沿用原文件名（论文已引用），expand 组另存
     out_path = OUT_DIR / ('counterfactual_unified.json' if group == 'shrink'
                           else f'counterfactual_unified_{tag}.json')
-    json.dump({k: v for k, v in runs.items()}, open(out_path, 'w'),
+    json.dump({k: v for k, v in runs.items()}, open(out_path, 'w', encoding='utf-8'),
               ensure_ascii=False, indent=2)
     print(f'\n  已保存 -> {out_path}')
 

@@ -74,9 +74,9 @@
     "black_rot_baseline": 0.0041,
     "mosaic_baseline": 0.5862,
     "black_rot_band": "<2%",
-    "mosaic_band": "ÖÐµÈÏÂ½µ",
-    "verdict": "H3 Ö¤Î±",
-    "reading": "Á£¶È²»×ãÒÔÔì³É»ãµã£¬4.4 ½ÚµÄ¹éÊô»úÖÆÒªÖØÐ´¡£"
+    "mosaic_band": "ä¸­ç­‰ä¸‹é™",
+    "verdict": "H3 è¯ä¼ª",
+    "reading": "ç²’åº¦ä¸è¶³ä»¥é€ æˆæ±‡ç‚¹ï¼Œ4.4 èŠ‚çš„å½’å±žæœºåˆ¶è¦é‡å†™ã€‚"
   },
   "dose_response": [
     {

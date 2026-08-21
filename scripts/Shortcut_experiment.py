@@ -456,8 +456,9 @@ def main():
                               'median': float(np.median(ta)) if ta else None,
                               'mean': float(np.mean(ta)) if ta else None},
         'criteria': {'A': A_ok, 'B': B_ok, 'C': C_ok},
-    }, open(res_path, 'w'), ensure_ascii=False, indent=2)
-    json.dump(records, open(out_dir / f'per_image_{tag}.json', 'w'), ensure_ascii=False)
+    }, open(res_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
+    json.dump(records, open(out_dir / f'per_image_{tag}.json', 'w', encoding='utf-8'),
+              ensure_ascii=False)
     print(f'\n  已保存 -> {res_path}')
 
 

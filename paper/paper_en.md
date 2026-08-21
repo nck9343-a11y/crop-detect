@@ -672,6 +672,8 @@ pp. 16965–16974, doi: 10.1109/CVPR52733.2024.01605.
 
 ## Appendix Reproducibility
 
+**Code and evaluation artifacts.** All scripts named below, together with the raw predictions, the evaluation outputs and the complete training logs, are available at [https://github.com/nck9343-a11y/crop-detect](https://github.com/nck9343-a11y/crop-detect). The datasets and model weights are not included (7.5 GB; the repository documents how to obtain and rebuild them), but every number reported in this paper can be re-derived from the artifacts in that repository without retraining. The pre-registered criteria of Section 4.4 are in the file header and module-level constants of `scripts/Shortcut_experiment.py`, and the verdict they yield is in the `prereg_verdict` field of `results/runs_shortcut/shortcut_E13.json`.
+
 All experiments fix the random seed and are reproducible under identical software and hardware. The environment is Windows, RTX 4060 Laptop 8 GB, PyTorch 2.13.0+cu132, Python 3.11. Peak GPU memory use is 2.8 GB (YOLO11s, batch 8, resolution 640), far below the 8 GB limit — training and deployment of this approach do not depend on high-performance computing equipment.
 
 All in-distribution metrics are computed by pycocotools on the same test set at the same confidence threshold, including the counterfactual groups of Section 4; per-class and scale-stratified metrics are all written to disk and can be checked in full.

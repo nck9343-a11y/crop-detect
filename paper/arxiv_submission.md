@@ -91,9 +91,12 @@ Public datasets for agricultural disease detection are usually judged fit for us
 ### Comments
 
 ```
-3 figures, 17 tables. A Chinese version of this work is available at ChinaXiv:
-[编号，投出后填入]. Code and evaluation artifacts: [仓库地址，推送后填入]
+3 figures, 17 tables. Code and evaluation artifacts: https://github.com/nck9343-a11y/crop-detect
 ```
+
+仓库地址已填入（同时也写进了两版正文的附录）。ChinaXiv 编号先不放：中文版还没投，不要在 Comments 里留方括号占位符。ChinaXiv 出来之后用 arXiv 的
+「replace」提交 v2，或者只改 Comments 字段，把这一句补上：
+`A Chinese version of this work is available at ChinaXiv: [编号]`
 
 ### License
 
@@ -104,17 +107,23 @@ Public datasets for agricultural disease detection are usually judged fit for us
 
 ## 四、投稿前逐项确认
 
-- [ ] **填上作者姓名与单位**（`论文.md` 与 `paper_en.md` 顶部各有一处占位）
+- [x] **填上作者姓名与单位** —— Pushuo Wang / School of Information and Control
+      Engineering, Shenyang Institute of Technology, Fushun, Liaoning, China
 - [ ] **确认 arXiv endorsement**：首次投稿或投新分类可能需要背书。
       机构邮箱（`.edu.cn` 等）通常可免。**这一步应在其他工作之前完成**——
       若背书拿不到，arXiv 路线不成立
+- [ ] **重新导出两份 PDF** —— 两版附录都新增了「代码与实验产物」一段（仓库地址），
+      现有的 `paper_en.pdf` / `论文.pdf` 已过期。用 Word 打开重新生成的 docx
+      另存为 PDF，然后回来说一声，我把字体嵌入、CJK 残留、插图版本、正文同步
+      那套检查重跑一遍
 - [ ] **chinaXiv 实名认证**：需机构邮箱与手机号
 - [ ] 通读英文版，确认翻译忠实（责任在作者，见第二节）
-- [ ] 英文版插图引用的是 `fig*_en`，确认 docx 中显示正确
-- [ ] AI 声明：两版正文末尾均已包含，措辞覆盖脚本编写与结果复核
-- [ ] **单位用学校官方英文名**，不要自行翻译
+- [x] 英文版插图引用的是 `fig*_en` —— 已从 PDF 内嵌图逐张核对，三张都是英文版
+- [x] AI 声明：两版正文末尾均已包含，措辞覆盖脚本编写与结果复核
+- [x] **单位用学校官方英文名** —— Shenyang Institute of Technology
 - [ ] 两版互相交叉引用：先投的拿到编号后，补进另一版的 Comments
-- [ ] 仓库地址：GitHub 推送后填入 Comments 字段与正文附录
+- [x] 仓库地址 —— https://github.com/nck9343-a11y/crop-detect，已填入 Comments
+      与两版正文附录
 - [ ] 确认目标期刊（若后续投稿）对预印本的政策——chinaXiv 由中科院建设，
       其定位即为保护首发权并与期刊衔接；国际期刊多数接受 arXiv 预印本
 

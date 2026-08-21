@@ -50,9 +50,9 @@ anything.
 
 **Layout.** `scripts/` experiment scripts, one per experiment, each runnable on its
 own; `results/` predictions and evaluations; `logs/` console logs; `paper/` the
-manuscript and submission material; `my_grape/` a handful of self-collected field
-photos, excluded from the formal experiments (paper Section 4.2) and kept only for
-the record.
+manuscript and submission material. A handful of self-collected field photos are
+*not* included: they were excluded from the formal experiments (paper Section 4.2)
+and support none of the reported results.
 
 **Note on paths.** Scripts use absolute paths (`D:\dev\crop-detect\...`) pointing
 at the author's machine. To run them elsewhere, edit the path constants at the top of
@@ -177,8 +177,8 @@ python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
 统一口径的评估结果、以及全部训练日志。这意味着**不需要 GPU、不需要重新训练，
 也能直接复核论文里的每一个数字**。
 
-`my_grape/` 是自采的田间照片（本人拍摄）。这批数据样本量太小（10 张），
-论文 4.2 节已明确将其排除在正式实验之外，此处收录只作留存。
+自采的田间照片（10 张）**不在本仓库中**。样本量太小，论文 4.2 节已明确将其
+排除在正式实验之外，不支撑任何已发表结果；仓库公开，故不随之公开。
 
 ---
 
@@ -232,14 +232,13 @@ results/          实验产物
   runs_sahi/        切图推理（E7，设计无效，见论文 5.3 节）
   spatial_out/      空间格局分析的合成数据验证图
 
-my_grape/         自采田间照片
 datasets/         数据集（不入库，见其 README）
-runs/  weights/  installers/       不入库，体积超限
+my_grape/  runs/  weights/  installers/     不入库（依次为：未用于正式实验、体积超限）
 ```
 
-本仓库当前为**私有**。转为公开之前需重新确认三件事：论文正文（目标期刊对预印本与
-首发权的政策）、`my_grape/`（尚未发表的自采照片），以及 git 历史的永久性——
-已提交的内容即便日后删除，仍留在历史记录里。
+本仓库为**公开**。转公开前清理过一次历史：`my_grape/` 已用 `git filter-branch`
+从全部提交中移除，不只是从最新版本里删掉——已提交的内容即便日后删除仍留在历史记录里，
+所以那一步必须在首次推送之前做完。
 
 ---
 
@@ -257,4 +256,7 @@ E5 使用的 RF-DETR 为 Apache 2.0，约束较少。
 
 ## 状态
 
-论文尚未投稿。投稿前待办见 [`paper/submission_checklist.md`](paper/submission_checklist.md)。
+英文版准备投 arXiv（cs.CV，交叉 cs.LG），中文版投 ChinaXiv。拿到编号后回填此处。
+
+投稿备忘见 [`paper/arxiv_submission.md`](paper/arxiv_submission.md)，
+早期的修改记录与待办见 [`paper/submission_checklist.md`](paper/submission_checklist.md)。

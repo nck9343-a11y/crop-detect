@@ -3,6 +3,8 @@
 本目录下的数据集**不纳入版本控制**（合计约 7.5 GB，且主数据集的再分发许可尚未确认）。
 下面说明每一份数据是什么、从哪里来、如何重建。
 
+**English version: [`README.en.md`](README.en.md).**
+
 ## 需要准备的数据
 
 | 目录 | 内容 | 用途 | 来源 |
@@ -13,15 +15,17 @@
 | `grape_cf_shrink/` | 主数据集的反事实版本：mosaic 类的框缩至中心 25% 面积 | 反事实重训（论文 4.4 节主组） | 由脚本生成，见下 |
 | `grape_cf_drop/` | 主数据集剔除 mosaic 类 | 反事实重训（旁证组） | 由脚本生成 |
 | `grape_cf_placebo/` | 改缩 botrytis 类的框 | 安慰剂对照 | 由脚本生成 |
+| `grape_cf_expand/` | 把最细的 black rot 类框粗化到整叶级 | 预注册的反向操作（论文 4.4 节结果 5） | 由脚本生成 |
 | `tomato3/` | 番茄子集 | 早期探索，论文未使用 | 由 `scripts/prepare.py` 从 fieldplant 抽取 |
 
-## 重建三组反事实数据集
+## 重建四组反事实数据集
 
-准备好 `grape_public/` 之后，两条命令即可生成，无需人工干预：
+准备好 `grape_public/` 之后，三条命令即可生成，无需人工干预：
 
 ```bash
 python scripts/Counterfactual_prepare.py              # 生成 grape_cf_shrink 与 grape_cf_drop
 python scripts/Counterfactual_prepare.py --only e12   # 生成 grape_cf_placebo
+python scripts/Counterfactual_prepare.py --only e13   # 生成 grape_cf_expand
 ```
 
 脚本只改动标注框，图像原样复制。缩框的操作是"中心不变、宽高各乘 0.5"，

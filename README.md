@@ -12,57 +12,29 @@ Modulator, Not a Cause*
 
 ---
 
-## English overview
+## English
 
-Code, logs and experimental artifacts for the paper above. This section is a short
-guide for readers arriving from the preprint; the **full English version of this
-README is at [`README.en.md`](README.en.md)**.
+**Full English version of this README: [`README.en.md`](README.en.md).**
 
-**What the paper reports.** In one public grape disease detection dataset (3288
-images, 11995 boxes, 6 classes), one class is annotated at whole-leaf level (median
-box area 43.16% of the image) while the other five are annotated at lesion level
-(0.57%-8.12%). No individual box is wrong; the inconsistency is *between* classes.
-On 5156 cross-species images containing no grape, 65.7% of the model's false-positive
-boxes fall into that one class - an over-representation of 13.41x against its share
-of the training annotations, in the direction opposite to a class-frequency prior.
-Single-variable counterfactual retraining shows granularity causally controls the
-*magnitude* of this shortcut, while a pre-registered manipulation in the opposite
-direction returns a negative result: granularity is a modulator, not a cause.
+In one public grape disease dataset, one class is annotated at whole-leaf level while
+the other five are annotated at lesion level. No individual box is wrong; the
+inconsistency is *between* classes. On 5156 cross-species images containing no grape,
+65.7% of the model's false-positive boxes fall into that one class — an
+over-representation of 13.41x against its share of the training annotations.
+Counterfactual retraining shows granularity controls the *magnitude* of this shortcut;
+a pre-registered manipulation in the opposite direction returns a negative result.
+Granularity is a modulator, not a cause.
 
-**Where the pre-registration lives.** Section 4.4 / Result 5 of the paper rests on
-criteria fixed before the results were seen. They are in the module docstring and
-constants at the top of
-[`scripts/Shortcut_experiment.py`](scripts/Shortcut_experiment.py): the band
-thresholds `BR_CUTS` / `MO_CUTS`, derived from the screening statistic rather than
-from any observed false-positive count; the E1 baseline `E13_BASELINE`; and
-`E13_TABLE`, a 3x3 decision table in which all nine cells carry a pre-assigned
-reading. The verdict issued from that table is written to disk alongside the
-false-positive counts, in the `prereg_verdict` and `screening` fields of
+The pre-registered criteria of paper Section 4.4 are in the module docstring and
+constants of [`scripts/Shortcut_experiment.py`](scripts/Shortcut_experiment.py)
+(`BR_CUTS`, `MO_CUTS`, `E13_BASELINE`, `E13_TABLE`, each with an English gloss); the
+verdict they yield is in the `prereg_verdict` key of
 [`results/runs_shortcut/shortcut_E13.json`](results/runs_shortcut/shortcut_E13.json).
-Substituting the E1 baseline values into the table yields "refuted", so the table is
-not biased towards confirmation. Readers are invited to check this directly.
+Readers checking that claim should start there.
 
-**Checking the numbers without a GPU.** The datasets and model weights are *not* in
-this repository (7.5 GB; see [`datasets/README.md`](datasets/README.md) for how to
-obtain and rebuild them). What *is* here is every experimental artifact: raw
-predictions on the test set and on the cross-species negative control in COCO JSON,
-all evaluations under a single pycocotools protocol, and the complete training logs.
-Every number in the paper can be re-derived from these files without retraining
-anything.
-
-**Layout.** `scripts/` experiment scripts, one per experiment, each runnable on its
-own; `results/` predictions and evaluations; `logs/` console logs; `paper/` the
-manuscript and submission material. A handful of self-collected field photos are
-*not* included: they were excluded from the formal experiments (paper Section 4.2)
-and support none of the reported results.
-
-**Note on paths.** Scripts use absolute paths (`D:\dev\crop-detect\...`) pointing
-at the author's machine. To run them elsewhere, edit the path constants at the top of
-each script. Fixing this properly is on the list, but the scripts are left exactly as
-they were when they produced the published results.
-
-**Licence.** Code is AGPL-3.0 (inherited from Ultralytics YOLO11; see
-[`LICENSE`](LICENSE)). Dataset licences are separate - see `datasets/README.md`.
+The datasets and weights are not in this repository, but every number in the paper can
+be re-derived from the artifacts that are, without retraining. See
+[`README.en.md`](README.en.md) for setup, data and how to reproduce each table.
 
 ---
 

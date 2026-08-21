@@ -78,11 +78,15 @@ def describe(v):
     }
 
 
-def analyse(key, root, note):
+def screening(root, note=''):
+    """对一个数据集计算全部筛查量。
+
+    单独抽出是因为反事实各组也要报告同一组量——若在别处重写一遍，
+    两处口径迟早会漂移，而这些量是要写进论文的。
+    """
     names = load_names(root)
     areas = collect(root)
     if not areas:
-        print(f'  [跳过] {key}: 未找到标注')
         return None
 
     per_class = {}
@@ -97,18 +101,31 @@ def analyse(key, root, note):
     coarse = [n for n, s in per_class.items() if s['median'] >= COARSE]
     fine = [n for n, s in per_class.items() if s['median'] <= FINE]
 
-    res = {
+    return {
         'note': note,
         'n_classes': len(per_class),
         'n_boxes': int(sum(s['n'] for s in per_class.values())),
         'span_R': span,
         'top_gap': gap,
         'median_of_class_medians': float(np.median(med)),
+        'top_median': float(med[0]),
+        'second_median': float(med[1]) if med.size > 1 else float('nan'),
         'coarse_classes': coarse,
         'fine_classes': fine,
         'inconsistent': bool(coarse and fine),
         'per_class': per_class,
     }
+
+
+def analyse(key, root, note):
+    res = screening(root, note)
+    if res is None:
+        print(f'  [跳过] {key}: 未找到标注')
+        return None
+    per_class = res['per_class']
+    med = np.sort(np.array([s['median'] for s in per_class.values()]))[::-1]
+    span, gap = res['span_R'], res['top_gap']
+    coarse = res['coarse_classes']
 
     print(f'\n{"=" * 92}')
     print(f'{key}  —  {note}')
@@ -133,6 +150,12 @@ def main():
     print('=' * 92)
     print('标注粒度一致性统计（阈值：整叶级 >= 30%，病斑级 <= 10%）')
     print('=' * 92)
+
+    # 传入路径时只做临时查看（例如反事实各组），不覆盖论文所用的 JSON
+    if len(sys.argv) > 1:
+        for p in sys.argv[1:]:
+            analyse(Path(p).name, Path(p), '临时查看')
+        return
 
     out = {}
     for key, root, note in DATASETS:

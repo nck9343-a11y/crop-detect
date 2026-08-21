@@ -12,11 +12,16 @@ E10 训练：反事实重训
     grape_cf_drop    辅助。剔除 mosaic 类。注意该组训练图像由 2631 降至
                      2354（少 10.5%），存在样本量混淆，故只作旁证。
 
+    grape_cf_expand  E13，反方向。把最细的 black rot（中位 0.57%）合并为
+                     整叶级外接框（中位 40.37%）。前三组都是"把粗改细"，
+                     该组把细改粗，用于验证粒度与捷径关系的双向对称性。
+
 训练完成后用 Shortcut_experiment.py 在 FieldPlant 上复测假阳性率，
 并用 Eval_unified.py 复测测试集指标。
 
 用法：
-    python Counterfactual_train.py
+    python Counterfactual_train.py               # E10a + E10b
+    python Counterfactual_train.py --only e13    # E13 扩框组
 """
 
 import time
@@ -35,17 +40,26 @@ BASE = dict(
     project=r'D:\dev\crop-detect\runs\detect',
 )
 
-RUNS = [
-    ('E10b_shrink', r'D:\dev\crop-detect\datasets\grape_cf_shrink\data.yaml'),
-    ('E10a_drop',   r'D:\dev\crop-detect\datasets\grape_cf_drop\data.yaml'),
-]
+RUNS = {
+    'e10': [
+        ('E10b_shrink', r'D:\dev\crop-detect\datasets\grape_cf_shrink\data.yaml'),
+        ('E10a_drop',   r'D:\dev\crop-detect\datasets\grape_cf_drop\data.yaml'),
+    ],
+    'e13': [
+        ('E13_expand',  r'D:\dev\crop-detect\datasets\grape_cf_expand\data.yaml'),
+    ],
+}
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--only', choices=list(RUNS), default='e10')
+    runs = RUNS[ap.parse_args().only]
     print('=' * 66)
     print('E10  反事实重训')
     print('=' * 66)
-    for name, data in RUNS:
+    for name, data in runs:
         if not Path(data).exists():
             print(f'  [跳过] 数据集不存在: {data}')
             continue

@@ -12,14 +12,23 @@
 
 三个评估配置：
     E1 / 原标注 GT       表 7 的基线，直接复用 results/runs_unified/pred_E1.json
-    shrink / shrink GT   反事实主组，各自在其标注体系下评估
-    E1 / shrink GT       诊断项。以原标注训练的模型在缩框 GT 上的表现，
-                         用于观察"缩框使任务变难"这一效度威胁的量级。
-                         注意该配置存在标注体系错配（模型按整叶级输出，
-                         GT 为病斑级），不作为论文结果报告。
+    CF / CF GT           反事实主组，各自在其标注体系下评估
+    E1 / CF GT           诊断项。以原标注训练的模型在改动后 GT 上的表现，
+                         用于观察"改标注使任务变难/变易"这一效度威胁的量级。
+                         注意该配置存在标注体系错配，不作为论文结果报告。
+
+两个反事实组：
+    shrink (E10b)  mosaic 的框缩至中心 25% 面积
+    expand (E13)   black rot 每图的病斑框合并为整叶级外接框
+
+    expand 组读数须留意：该类 GT 由 4237 个小框变为 476 个大框，
+    目标数减少而单目标变大，两者都使 AP 上升，与是否学到症状特征无关。
+    故该组的分布内 AP 只用于说明"模型确实按新标注体系学到了东西"，
+    不作为捷径论证的证据——捷径证据来自 FieldPlant 上的假阳性分布。
 
 用法：
-    python Eval_counterfactual.py
+    python Eval_counterfactual.py                  # shrink 组（E10b）
+    python Eval_counterfactual.py --group expand   # expand 组（E13）
 """
 
 import json
@@ -32,15 +41,20 @@ from pycocotools.cocoeval import COCOeval
 
 ROOT = Path(r'D:\dev\crop-detect')
 BASE_ANN = ROOT / 'datasets' / 'grape_coco' / 'test' / '_annotations.coco.json'
-CF_TEST = ROOT / 'datasets' / 'grape_cf_shrink' / 'test'
-OUT_DIR = ROOT / 'runs_unified'
-SHRINK_W = ROOT / 'runs' / 'detect' / 'E10b_shrink' / 'weights' / 'best.pt'
+OUT_DIR = ROOT / 'results' / 'runs_unified'   # 结果目录后来挪到 results/ 下
+
+GROUPS = {
+    'shrink': dict(tag='E10b', dataset='grape_cf_shrink',
+                   run='E10b_shrink', changed='mosaic virus disease'),
+    'expand': dict(tag='E13',  dataset='grape_cf_expand',
+                   run='E13_expand',  changed='grape black rot'),
+}
 
 CONF = 0.01        # 与 Eval_unified.py 一致
 CAT_OFFSET = 1     # YOLO 类别从 0 起，COCO 中 id 0 为占位类
 
 
-def build_cf_ann(out_path):
+def build_cf_ann(out_path, cf_test):
     """由 grape_cf_shrink 的 YOLO 标签构造 COCO 标注。
 
     图像 id、file_name、类别 id 全部沿用原 COCO 标注，只替换标注框，
@@ -52,7 +66,7 @@ def build_cf_ann(out_path):
     anns, aid = [], 1
     missing = 0
     for im in raw['images']:
-        lbl = CF_TEST / 'labels' / (Path(im['file_name']).stem + '.txt')
+        lbl = cf_test / 'labels' / (Path(im['file_name']).stem + '.txt')
         if not lbl.exists():
             missing += 1
             continue
@@ -124,24 +138,35 @@ def evaluate(ann_path, pred_path, cats):
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--group', choices=list(GROUPS), default='shrink')
+    group = ap.parse_args().group
+    g = GROUPS[group]
+
+    cf_test = ROOT / 'datasets' / g['dataset'] / 'test'
+    cf_w = ROOT / 'runs' / 'detect' / g['run'] / 'weights' / 'best.pt'
+    tag = g['tag']
+
     raw = json.load(open(BASE_ANN, encoding='utf-8'))
     cats = {c['id']: c['name'] for c in raw['categories'] if c['id'] != 0}
     names = sorted(cats.values())
 
     print('=' * 78)
-    print('反事实组分布内评估（统一 pycocotools 口径）')
+    print(f'反事实组分布内评估（统一 pycocotools 口径）  组别 {tag} / {group}')
+    print(f'  被改动的类别：{g["changed"]}')
     print('=' * 78)
 
-    cf_ann = build_cf_ann(OUT_DIR / 'ann_cf_shrink_test.json')
+    cf_ann = build_cf_ann(OUT_DIR / f'ann_cf_{group}_test.json', cf_test)
 
     pred_e1 = OUT_DIR / 'pred_E1.json'
-    pred_sh = predict(SHRINK_W, raw['images'], CF_TEST / 'images',
-                      OUT_DIR / 'pred_E10b_shrink.json')
+    pred_cf = predict(cf_w, raw['images'], cf_test / 'images',
+                      OUT_DIR / f'pred_{tag}_{group}.json')
 
     runs = {
-        'E1 / 原标注 GT':     evaluate(BASE_ANN, pred_e1, cats),
-        'shrink / shrink GT': evaluate(cf_ann, pred_sh, cats),
-        'E1 / shrink GT':     evaluate(cf_ann, pred_e1, cats),
+        'E1 / 原标注 GT':            evaluate(BASE_ANN, pred_e1, cats),
+        f'{group} / {group} GT':     evaluate(cf_ann, pred_cf, cats),
+        f'E1 / {group} GT':          evaluate(cf_ann, pred_e1, cats),
     }
 
     print('\n' + '=' * 78)
@@ -157,14 +182,24 @@ def main():
         print(f'{k:<26}  mAP50 {r["mAP50"]:.4f}   mAP50-95 {r["mAP50_95"]:.4f}')
 
     print('\n  表 10 用（相对基线 E1 / 原标注 GT 的变化）')
-    a, b = runs['E1 / 原标注 GT']['per_class'], runs['shrink / shrink GT']['per_class']
+    a = runs['E1 / 原标注 GT']['per_class']
+    b = runs[f'{group} / {group} GT']['per_class']
     for n in names:
-        print(f'    {n:<26}{a[n]:>9.4f}{b[n]:>9.4f}{(b[n] / a[n] - 1) * 100:>9.1f}%')
+        mark = '  <- 被改动' if n == g['changed'] else ''
+        print(f'    {n:<26}{a[n]:>9.4f}{b[n]:>9.4f}'
+              f'{(b[n] / a[n] - 1) * 100:>9.1f}%{mark}')
+    if group == 'expand':
+        print('\n  注意：black rot 的 GT 由 4237 个小框变为 476 个大框，'
+              '目标变少变大本身即抬高 AP，')
+        print('        该行不能作为"学到症状特征"的证据，'
+              '捷径证据在 FieldPlant 的假阳性分布。')
 
-    json.dump({k: v for k, v in runs.items()},
-              open(OUT_DIR / 'counterfactual_unified.json', 'w'),
+    # shrink 组沿用原文件名（论文已引用），expand 组另存
+    out_path = OUT_DIR / ('counterfactual_unified.json' if group == 'shrink'
+                          else f'counterfactual_unified_{tag}.json')
+    json.dump({k: v for k, v in runs.items()}, open(out_path, 'w'),
               ensure_ascii=False, indent=2)
-    print(f'\n  已保存 -> {OUT_DIR / "counterfactual_unified.json"}')
+    print(f'\n  已保存 -> {out_path}')
 
 
 if __name__ == '__main__':

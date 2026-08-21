@@ -17,6 +17,8 @@ from docx import Document
 from docx.shared import Pt, RGBColor, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 
 
 # 按语言选字体：英文正文若沿用宋体，一眼即可看出是从中文模板生成的。
@@ -39,6 +41,65 @@ def set_cn_font(run, name=None, size=10.5, bold=False):
     rFonts.set(
         '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}eastAsia',
         name)
+
+
+MIN_COL_PT = 30          # 数值列的最小宽度，避免被长文本列挤扁
+
+
+def fit_columns(doc, table, header, rows):
+    """按各列内容的最大显示宽度分配列宽，总宽严格等于正文宽度。
+
+    python-docx 默认给每列等宽：表 3 的 "RF-DETR-Nano" 会在 61.7pt 的列里
+    折成两行，而同表的数值列大量留白。改用 Word 的 autofit 则会把表撑到
+    442.8pt，超出 432pt 的正文宽度——两端出血比折行更糟。
+    故在此自行分配：按内容定比例，再缩放到正好填满正文宽度。
+    """
+    sec = doc.sections[-1]
+    total = sec.page_width - sec.left_margin - sec.right_margin
+
+    def disp_width(s):
+        """显示宽度。汉字按两个西文字符计，行内标记不计入。"""
+        s = re.sub(r'\*\*|`|</?sup>|\*', '', s)
+        return sum(2 if is_cjk(c) else 1 for c in s)
+
+    raw = []
+    for k in range(len(header)):
+        vals = [disp_width(header[k])]
+        vals += [disp_width(r[k]) for r in rows if k < len(r)]
+        raw.append(max(vals) + 2)        # +2 留作单元格内边距
+
+    # 单列过长会吃掉其余列，封顶为均值的 3 倍
+    cap = 3 * sum(raw) / len(raw)
+    raw = [min(v, cap) for v in raw]
+
+    scale = total / sum(raw)
+    widths = [v * scale for v in raw]
+
+    # 保底宽度：不足者补齐，缺口按比例从有余量的列扣回
+    short = [i for i, v in enumerate(widths) if v < Pt(MIN_COL_PT)]
+    if short:
+        deficit = sum(Pt(MIN_COL_PT) - widths[i] for i in short)
+        donors = [i for i in range(len(widths)) if i not in short]
+        pool = sum(widths[i] for i in donors)
+        for i in short:
+            widths[i] = Pt(MIN_COL_PT)
+        for i in donors:
+            widths[i] -= deficit * (widths[i] / pool)
+
+    table.autofit = False
+    tblPr = table._tbl.tblPr
+    for tag in ('tblLayout', 'tblW'):
+        el = tblPr.find(qn('w:' + tag))
+        if el is not None:
+            tblPr.remove(el)
+    layout = OxmlElement('w:tblLayout')
+    layout.set(qn('w:type'), 'fixed')
+    tblPr.append(layout)
+
+    # Word 只认单元格上的宽度，逐格写入
+    for k, wd in enumerate(widths):
+        for row in table.rows:
+            row.cells[k].width = int(wd)
 
 
 INLINE = re.compile(r'(\*\*[^*]+\*\*|<sup>.+?</sup>|`[^`]+`|\*[^*\n]+\*)')
@@ -159,6 +220,7 @@ def _render(doc, md_path):
                 for k, v in enumerate(r[:len(header)]):
                     cells[k].text = ''
                     add_inline(cells[k].paragraphs[0], v, size=9.5)
+            fit_columns(doc, t, header, rows)
             doc.add_paragraph()
             i = j
             continue

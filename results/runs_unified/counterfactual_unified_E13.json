@@ -1,0 +1,38 @@
+{
+  "E1 / Ô­±ê×¢ GT": {
+    "mAP50_95": 0.515872455332325,
+    "mAP50": 0.8356549521874302,
+    "per_class": {
+      "grape black rot": 0.5667558383929576,
+      "grape botrytis cinerea": 0.3453519044503496,
+      "grape downy mildew": 0.4962216013482439,
+      "grape powdery mildew": 0.37105820985772864,
+      "grape ulcer disease": 0.5549135822265524,
+      "mosaic virus disease": 0.7609335957181177
+    }
+  },
+  "expand / expand GT": {
+    "mAP50_95": 0.5616314546482846,
+    "mAP50": 0.8369649665512505,
+    "per_class": {
+      "grape black rot": 0.8546868850600635,
+      "grape botrytis cinerea": 0.3409805417667803,
+      "grape downy mildew": 0.5035473854496676,
+      "grape powdery mildew": 0.3829199096532457,
+      "grape ulcer disease": 0.5538055924876512,
+      "mosaic virus disease": 0.7338484134722987
+    }
+  },
+  "E1 / expand GT": {
+    "mAP50_95": 0.42144937206800737,
+    "mAP50": 0.674545501005066,
+    "per_class": {
+      "grape black rot": 0.00021733880705143688,
+      "grape botrytis cinerea": 0.3453519044503496,
+      "grape downy mildew": 0.4962216013482439,
+      "grape powdery mildew": 0.37105820985772864,
+      "grape ulcer disease": 0.5549135822265524,
+      "mosaic virus disease": 0.7609335957181177
+    }
+  }
+}

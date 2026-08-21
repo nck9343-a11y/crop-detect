@@ -1,0 +1,129 @@
+{
+  "config": {
+    "tag": "E13",
+    "weights": "D:\\dev\\crop-detect\\runs\\detect\\E13_expand\\weights\\best.pt",
+    "conf": 0.25,
+    "n_images": 5156,
+    "classes": [
+      "grape black rot",
+      "grape botrytis cinerea",
+      "grape downy mildew",
+      "grape powdery mildew",
+      "grape ulcer disease",
+      "mosaic virus disease"
+    ]
+  },
+  "summary": {
+    "images_with_det": 3357,
+    "total_fp_boxes": 7432,
+    "fp_per_image": 1.4414274631497284
+  },
+  "class_counts": {
+    "grape botrytis cinerea": 3337,
+    "grape powdery mildew": 4,
+    "grape downy mildew": 355,
+    "mosaic virus disease": 3718,
+    "grape ulcer disease": 18
+  },
+  "pred_share": {
+    "grape powdery mildew": 0.0005382131324004305,
+    "grape downy mildew": 0.047766415500538215,
+    "grape botrytis cinerea": 0.4490043057050592,
+    "grape ulcer disease": 0.0024219590958019376,
+    "mosaic virus disease": 0.5002691065662002,
+    "grape black rot": 0.0
+  },
+  "prior_used": {
+    "grape black rot": 0.0578090842846733,
+    "grape botrytis cinerea": 0.18860820986154966,
+    "grape downy mildew": 0.2113189215448142,
+    "grape powdery mildew": 0.2828515909642944,
+    "grape ulcer disease": 0.1873937333009473,
+    "mosaic virus disease": 0.07201846004372116
+  },
+  "prior_source": "D:\\dev\\crop-detect\\datasets\\grape_cf_expand",
+  "over_representation": {
+    "grape powdery mildew": 0.001902811048598173,
+    "grape downy mildew": 0.22603946277668485,
+    "grape botrytis cinerea": 2.38061909412457,
+    "grape ulcer disease": 0.012924440178116108,
+    "mosaic virus disease": 6.946401051376209,
+    "grape black rot": 0.0
+  },
+  "screening": {
+    "span_R": 7.568478231784002,
+    "top_gap": 1.0690206938720197,
+    "median_of_class_medians": 0.057023620605468756,
+    "top_median": 0.43158203124999994,
+    "second_median": 0.403717190625,
+    "coarse_classes": [
+      "mosaic virus disease",
+      "grape black rot"
+    ],
+    "fine_classes": [
+      "grape powdery mildew",
+      "grape ulcer disease",
+      "grape downy mildew",
+      "grape botrytis cinerea"
+    ],
+    "n_boxes": 8234
+  },
+  "prereg_verdict": {
+    "black_rot_share": 0.0,
+    "mosaic_share": 0.5002691065662002,
+    "black_rot_baseline": 0.0041,
+    "mosaic_baseline": 0.5862,
+    "black_rot_band": "<2%",
+    "mosaic_band": "中等下降",
+    "verdict": "H3 证伪",
+    "reading": "粒度不足以造成汇点，4.4 节的归属机制要重写。"
+  },
+  "dose_response": [
+    {
+      "lo": 0.0,
+      "hi": 0.05,
+      "n": 30,
+      "rate": 0.0
+    },
+    {
+      "lo": 0.05,
+      "hi": 0.15,
+      "n": 169,
+      "rate": 0.1834319526627219
+    },
+    {
+      "lo": 0.15,
+      "hi": 0.3,
+      "n": 675,
+      "rate": 0.4014814814814815
+    },
+    {
+      "lo": 0.3,
+      "hi": 0.5,
+      "n": 1207,
+      "rate": 0.52029826014913
+    },
+    {
+      "lo": 0.5,
+      "hi": 0.7,
+      "n": 1230,
+      "rate": 0.4056910569105691
+    },
+    {
+      "lo": 0.7,
+      "hi": 1.01,
+      "n": 1845,
+      "rate": 0.22655826558265582
+    }
+  ],
+  "target_pred_areas": {
+    "n": 3718,
+    "median": 0.11203752714264653,
+    "mean": 0.25137645468735315
+  },
+  "criteria": {
+    "A": true,
+    "B": false,
+    "C": false
+  }
+}

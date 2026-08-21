@@ -29,7 +29,11 @@ E9: 跨物种阴性对照 —— 捷径学习的定量验证
 
     三条同时成立 -> 捷径机制得到定量验证
     仅 A 成立     -> 存在类别偏置，但未必是绿色大区域这条捷径
-    均不成立      -> 假设被证伪，§4.3 的归因需要重写
+    均不成立      -> 该规则被证伪
+
+实际结果为"仅 A 成立"：类别偏置显著，但绿色大区域这条具体规则未获支持，
+故 4.3 节将其撤回。归属机制改由 4.4 节的反事实重训承担——
+本脚本此后的用途即是复测各反事实组的假阳性分布。
 
 用法：
     python Shortcut_experiment.py
@@ -53,7 +57,12 @@ CONF = 0.25          # 部署时的常用阈值，与 §4.2 的域偏移实验�
 IMGSZ = 640
 
 # 训练集中各类标注框占比（来自 datasets/grape_public 全量统计），
-# 用作"若无偏置，预测分布应大致相当"的参照基线
+# 用作"若无偏置，预测分布应大致相当"的参照基线。
+#
+# 该表对 E1/E10a/E10b/E12 均适用：drop 组按剩余类别重新归一化即可，
+# shrink 组只改框的尺寸、不改框数。但 E13（扩框组）把 4237 个病斑框
+# 合并成 476 个整叶框，占比由 35.3% 降至 5.8%，此表不再成立，
+# 须用 --prior-from 从该组数据集现场重算。
 TRAIN_PRIOR = {
     'grape black rot':        0.353,
     'grape powdery mildew':   0.194,
@@ -68,6 +77,114 @@ TARGET = 'mosaic virus disease'
 TARGET_TRAIN_AREA = 0.4316
 
 GREEN_BINS = [0.0, 0.05, 0.15, 0.30, 0.50, 0.70, 1.01]   # 判据 B 的分组
+
+
+# ================================================================ E13 预注册判据
+#
+# 结论必须在看到结果之前定死。以下判据于训练完成前写入本文件，
+# 依据是 grape_cf_expand 的筛查量，而非任何实测的假阳性数字。
+#
+# 该数据集的筛查量（Granularity_stats.screening 同一口径）：
+#     原数据集   R = 15.20x   m1/m2 = 5.32x   -> 单一孤立的最粗类
+#     expand     R =  7.56x   m1/m2 = 1.07x   -> 两个并列的最粗类
+#                             (mosaic 43.16% / black rot 40.37%)
+#
+# 关键：按 5.2 节的筛查量，expand 组属于"有若干并列粗类、无孤立汇点"
+# 那一型——即 FieldPlant 型。故理论预测的不是"汇点整体转移到黑腐病"，
+# 而是汇点在两个并列粗类之间分裂。若实测证实，则 m1/m2 由描述量升格为
+# 有预测力的量，这比单纯的双向对称更强。
+#
+# 主指标为原始预测占比：expand 组的框数由 4237 降至 476，训练占比
+# 35.3% -> 5.8%，过表达倍数的分母缩小 6.1 倍会机械抬高倍数。
+#
+# E1 基线（results/runs_shortcut/shortcut_E1.json，9176 个假阳性框）：
+#     black rot    38 / 9176 =  0.41%
+#     mosaic     5379 / 9176 = 58.62%
+E13_BASELINE = {'grape black rot': 0.0041, 'mosaic virus disease': 0.5862}
+
+# 分档阈值。黑腐病三档由 2%/10% 切分；mosaic 三档为
+#   显著下降 <40%   中等下降 40%~53.6%（较基线降 5 个百分点以上）   基本不变 >=53.6%
+BR_CUTS = (0.02, 0.10)
+MO_CUTS = (0.40, 0.536)
+
+# 3x3 决策表。九格全部有归属——留空档等于给事后解释留口子。
+E13_TABLE = {
+    ('>10%', '显著下降'): (
+        'H1 成立',
+        '汇点随粒度转移；双向对称成立。m1/m2 由 5.32 降至 1.07 所预测的'
+        '"无孤立汇点"得到独立验证，筛查量具有预测力。'),
+    ('>10%', '中等下降'): (
+        'H1 成立（分裂型）',
+        '两个并列粗类分摊汇点——正是 m1/m2 = 1.07 所预测的形态，'
+        '亦即 FieldPlant 型。这是本组的首选预期结果。'),
+    ('>10%', '基本不变'): (
+        '未预见 A',
+        '黑腐病夺得汇点而 mosaic 未让位。须检查假阳性总量（fp_per_image）'
+        '是否上升：若上升，则汇点并非零和，E12 中"缩 botrytis 使 mosaic 反升"'
+        '的竞争性解读需要修正。'),
+    ('2-10%', '显著下降'): (
+        '未预见 B',
+        'mosaic 让出汇点而黑腐病未接手。须查汇点是否流向 botrytis——'
+        'E10b 曾出现该现象（botrytis 2.99x -> 4.75x）。'),
+    ('2-10%', '中等下降'): (
+        'H2 部分成立',
+        '粒度可造成部分归属倾向，但不足以夺取汇点。'),
+    ('2-10%', '基本不变'): (
+        'H2 部分成立',
+        '粒度可造成部分归属倾向，但不足以夺取汇点；'
+        '须检查是否因 40.37% 仍略低于 43.16%。'),
+    ('<2%', '显著下降'): (
+        '未预见 B',
+        'mosaic 让出汇点而黑腐病未接手，须查汇点流向何处。'),
+    ('<2%', '中等下降'): (
+        'H3 证伪',
+        '粒度不足以造成汇点，4.4 节的归属机制要重写。'),
+    ('<2%', '基本不变'): (
+        'H3 证伪',
+        '粒度不足以造成汇点，4.4 节的归属机制要重写。'),
+}
+
+
+def e13_verdict(pred_share):
+    """按预注册的 3x3 表给出判定。pred_share 为各类的原始预测占比。"""
+    br = pred_share.get('grape black rot', 0.0)
+    mo = pred_share.get('mosaic virus disease', 0.0)
+    br_band = '>10%' if br > BR_CUTS[1] else ('2-10%' if br >= BR_CUTS[0] else '<2%')
+    mo_band = ('显著下降' if mo < MO_CUTS[0]
+               else ('中等下降' if mo < MO_CUTS[1] else '基本不变'))
+    name, text = E13_TABLE[(br_band, mo_band)]
+    return {'black_rot_share': br, 'mosaic_share': mo,
+            'black_rot_baseline': E13_BASELINE['grape black rot'],
+            'mosaic_baseline': E13_BASELINE['mosaic virus disease'],
+            'black_rot_band': br_band, 'mosaic_band': mo_band,
+            'verdict': name, 'reading': text}
+
+
+def prior_from_dataset(root):
+    """从数据集现场统计各类标注框占比，替代硬编码的 TRAIN_PRIOR。
+
+    用于框数被操纵过的组（E13）——此时占比的分母变了，沿用旧表会使
+    过表达倍数被机械抬高，得出虚假的结论。
+    """
+    import yaml
+    from collections import Counter
+
+    root = Path(root)
+    names = yaml.safe_load(open(root / 'data.yaml', encoding='utf-8'))['names']
+    cnt = Counter()
+    for sp in ['train', 'valid', 'test']:
+        d = root / sp / 'labels'
+        if not d.exists():
+            continue
+        for lbl in d.glob('*.txt'):
+            for line in lbl.read_text().splitlines():
+                p = line.split()
+                if len(p) >= 5:
+                    cnt[names[int(p[0])]] += 1
+    total = sum(cnt.values())
+    if not total:
+        raise SystemExit(f'未能从 {root} 统计到任何标注框')
+    return {n: cnt[n] / total for n in names}, total
 
 
 # ------------------------------------------------------------------ 绿色区域度量
@@ -117,6 +234,11 @@ def main():
                          '全分辨率解码 67ms/张而 1/4 仅 20ms，'
                          '且图像最终统一缩至 640 送入模型，故不损失有效信息。'
                          '各组必须取相同值，否则解码链路不同、结果不可比。')
+    ap.add_argument('--prior-from', default=None, metavar='DATASET_DIR',
+                    help='从该数据集现场统计训练标注占比，替代硬编码的 TRAIN_PRIOR。'
+                         '框数被操纵过的组（如 E13 扩框组）必须使用。')
+    ap.add_argument('--verdict', choices=['e13'], default=None,
+                    help='套用预注册的判定表。e13 用本文件顶部的 3x3 表。')
     args = ap.parse_args()
     decode_flag = {1: cv2.IMREAD_COLOR,
                    2: cv2.IMREAD_REDUCED_COLOR_2,
@@ -201,16 +323,29 @@ def main():
     print('-' * 70)
     # drop 组的模型只有 5 类，其训练占比需在剩余类别上重新归一化，
     # 否则过表达倍数会被系统性低估，与 6 类模型无法比较。
-    present = {c: p for c, p in TRAIN_PRIOR.items() if c in names.values()}
+    prior_table = TRAIN_PRIOR
+    screen = None
+    if args.prior_from:
+        prior_table, n_ann = prior_from_dataset(args.prior_from)
+        print(f'  [训练占比现场重算自 {Path(args.prior_from).name}，共 {n_ann} 个框]')
+        # 筛查量与假阳性结果必须同时落盘：事后补算就不算预注册了
+        from Granularity_stats import screening
+        screen = screening(Path(args.prior_from))
+        if screen:
+            print(f'  [该数据集筛查量  R = {screen["span_R"]:.2f}x   '
+                  f'm(1)/m(2) = {screen["top_gap"]:.2f}x   '
+                  f'整叶级类别 {screen["coarse_classes"]}]')
+    present = {c: p for c, p in prior_table.items() if c in names.values()}
     norm = sum(present.values())
     prior_used = {c: p / norm for c, p in present.items()}
 
-    over = {}
+    over, pred_share = {}, {}
     for c, prior in sorted(prior_used.items(), key=lambda kv: -kv[1]):
         cnt = box_cls.get(c, 0)
         share = cnt / total_boxes if total_boxes else 0.0
         ratio = share / prior if prior else 0.0
         over[c] = ratio
+        pred_share[c] = share
         mark = '  <<<' if c == TARGET else ''
         print(f'{c:<26}{cnt:>10}{share:>9.1%}{prior:>10.1%}{ratio:>11.2f}x{mark}')
     print('-' * 70)
@@ -274,12 +409,30 @@ def main():
     print('-' * 70)
     if A_ok and B_ok and C_ok:
         print('  三条证据同时成立：捷径机制得到定量验证。')
-        print('  §4.3 的归因可由推理链升级为实验结论，样本量 5156，判据客观。')
+        print('  该规则可由推理链升级为实验结论，样本量 5156，判据客观。')
     elif A_ok:
         print('  存在显著类别偏置，但绿色大区域这条具体捷径未被完整证实，')
         print('  需检查 blob_frac 是否恰当刻画了触发条件。')
     else:
-        print('  假设未获支持，§4.3 的归因需要重写。')
+        print('  假设未获支持，4.4 节的归属机制需要重写。')
+
+    # ---------------- E13：预注册的 3x3 判定 ----------------
+    vd = None
+    if args.verdict == 'e13':
+        vd = e13_verdict(pred_share)
+        print('\n' + '=' * 70)
+        print('E13 预注册判定（判据于训练完成前写定，见本文件顶部）')
+        print('=' * 70)
+        print(f'  black rot 预测占比  {vd["black_rot_baseline"]:.2%} -> '
+              f'{vd["black_rot_share"]:.2%}   [{vd["black_rot_band"]}]')
+        print(f'  mosaic    预测占比  {vd["mosaic_baseline"]:.2%} -> '
+              f'{vd["mosaic_share"]:.2%}   [{vd["mosaic_band"]}]')
+        if screen:
+            print(f'  数据集筛查量  R = {screen["span_R"]:.2f}x   '
+                  f'm(1)/m(2) = {screen["top_gap"]:.2f}x')
+        print('-' * 70)
+        print(f'  判定：{vd["verdict"]}')
+        print(f'  {vd["reading"]}')
 
     res_path = out_dir / f'shortcut_{tag}.json'
     json.dump({
@@ -287,7 +440,17 @@ def main():
                    'classes': list(names.values())},
         'summary': {'images_with_det': img_with_det, 'total_fp_boxes': total_boxes,
                     'fp_per_image': total_boxes / n if n else 0.0},
-        'class_counts': dict(box_cls), 'over_representation': over,
+        'class_counts': dict(box_cls),
+        'pred_share': pred_share,          # 原始预测占比——不受分母操纵影响
+        'prior_used': prior_used,          # 实际使用的训练占比（可能已现场重算）
+        'prior_source': args.prior_from or 'hardcoded',
+        'over_representation': over,
+        # 筛查量与判定和假阳性数字同时落盘，供 5.2 节引用
+        'screening': ({k: screen[k] for k in
+                       ['span_R', 'top_gap', 'median_of_class_medians',
+                        'top_median', 'second_median', 'coarse_classes',
+                        'fine_classes', 'n_boxes']} if screen else None),
+        'prereg_verdict': vd,
         'dose_response': curve,
         'target_pred_areas': {'n': len(ta),
                               'median': float(np.median(ta)) if ta else None,

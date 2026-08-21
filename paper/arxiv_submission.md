@@ -63,42 +63,22 @@ arXiv 自 2026-02-11 起要求"所有投稿必须有完整英文版"
 ### Title
 
 ```
-Shortcut Learning in a Public Grape Disease Dataset: The Causal Role of Inconsistent Annotation Granularity, and Its Limits
+Shortcut Learning in a Public Grape Disease Dataset: Annotation Granularity as a Modulator, Not a Cause
 ```
 
 ### Abstract
 
+**表单里填下面这一版（1881 字符）。** arXiv 摘要字段的上限约 1920 字符
+（以提交时表单的实际提示为准），而正文 PDF 中的完整摘要约 3300 字符，
+直接粘贴会被截断或退回。正文保留完整版、表单填精简版是常规做法，二者论断一致。
+
+精简掉的是：五组对照的具体数字（2.58M–32M、384–960、1.54 pp）、六类中位面积区间、
+缩框组的分布内 AP（0.7609 → 0.4552）、drop 组、光学核算的细节。
+保留的是 13.41x 过表达、−66%、阴性结果的三个数
+（0.57% → 40.37%、zero boxes、50.0% remains），以及 "modulator, not a cause" 这个论断。
+
 ```
-Public datasets are the main data source for research on agricultural disease
-detection, and their fitness for use is usually judged from the metrics reported
-on them - yet those metrics say nothing about whether the annotation scheme is
-internally consistent. Taking one public grape disease detection dataset (3288
-images, 11995 boxes, 6 classes) as the object of study, this paper asks which
-intrinsic properties of public data determine whether a detection system built on
-it is actually usable. Five single-variable controls spanning model capacity from
-2.58M to 32M parameters, input resolution from 384 to 960, and one change of
-detection paradigm yield a test-set mAP50 range of only 1.54 percentage points
-under a single evaluation protocol - the same order as seed-to-seed variation;
-scale-stratified evaluation locates the bottleneck at small objects consistently
-across all five architectures. The principal finding lies on the data side: one
-class is annotated predominantly at whole-leaf level (median box area 43.16% of
-the image) while the other five are annotated at lesion level (0.57% to 8.12%).
-Using 5156 cross-species images containing no grape as a negative control, 65.7%
-of the 12221 false-positive boxes fall into that one class, an over-representation
-of 13.41x relative to its share of the training annotations, in the direction
-opposite to a class-frequency prior. Single-variable counterfactual retraining
-establishes causality: shrinking only that class's boxes lowers its
-in-distribution AP from 0.7609 to 0.4552 while the other five classes change by no
-more than seed-to-seed variation, and cross-species false positives fall by 66% at
-the same time; a placebo control confirms the effect is specific to the
-manipulated class. Removing the class outright does not solve the problem - the
-false positives transfer to the next most coarsely annotated class. Annotation
-granularity accounts for roughly half of the over-representation; the remainder is
-unexplained. We further propose a granularity screening statistic requiring
-neither images nor training, and use it to separate two regimes, uniformly coarse
-and uneven across classes, of which only the latter is dangerous. The failure mode
-reported here is invisible to in-distribution evaluation and therefore constitutes
-a blind spot in judging whether a public dataset is fit for use.
+Public datasets for agricultural disease detection are usually judged fit for use from reported metrics, which say nothing about whether the annotation scheme is internally consistent. On one public grape disease dataset (3288 images, 11995 boxes, 6 classes), varying model capacity, input resolution and detection paradigm yields a test-set mAP50 range comparable to seed-to-seed noise, with the bottleneck at small objects across all five architectures. The finding lies on the data side: one class is annotated at whole-leaf level (median box area 43.16% of the image) while the other five are annotated at lesion level. On 5156 cross-species images containing no grape, 65.7% of the false-positive boxes fall into that one class, an over-representation of 13.41x relative to its share of the training annotations. Counterfactual retraining establishes a causal effect of granularity on the magnitude of the shortcut: shrinking only that class's boxes cuts its cross-species false positives by 66%, and a placebo control confirms the effect is specific to the manipulated class. A manipulation in the opposite direction, with criteria registered in advance, returns a negative result: coarsening the finest class to whole-leaf level (0.57% to 40.37%), matched in box count and share of annotations and with higher in-distribution AP, still leaves its cross-species false positives at zero boxes, while the unmanipulated original class holds 50.0% of them. Annotation granularity is therefore a modulator of this shortcut, not its cause: it can amplify or attenuate a sink that already exists, but cannot create one, and what fixes the destination remains open. We also give a granularity screening statistic requiring neither images nor training, and show airborne lesion-level detection to be optically out of reach. The failure mode is invisible to in-distribution evaluation.
 ```
 
 （摘要已去除非 ASCII 字符：× 写作 x，破折号写作 -。）
@@ -111,7 +91,7 @@ a blind spot in judging whether a public dataset is fit for use.
 ### Comments
 
 ```
-3 figures, 16 tables. A Chinese version of this work is available at ChinaXiv:
+3 figures, 17 tables. A Chinese version of this work is available at ChinaXiv:
 [编号，投出后填入]. Code and evaluation artifacts: [仓库地址，推送后填入]
 ```
 
